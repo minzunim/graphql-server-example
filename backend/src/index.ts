@@ -12,6 +12,7 @@ import cors from 'cors';
 // import resolvers from './resolvers';
 // import typeDefs from './typeDefs';
 
+
 /**
  * Construct a GraphQL schema and define the necessary resolvers.
  *
@@ -117,7 +118,7 @@ const server = new ApolloServer({
 await server.start();
 app.use(
   '/graphql',
-  cors<cors.CorsRequest>(),
+  cors(),
   express.json(),
   expressMiddleware(server),
 );
