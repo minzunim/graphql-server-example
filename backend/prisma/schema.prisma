@@ -1,0 +1,2348 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model SequelizeMeta {
+  name String @id @unique(map: "name") @db.VarChar(255)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model admin {
+  idx           Int       @id @default(autoincrement())
+  code          String    @unique(map: "code") @db.Char(50)
+  type          Int       @default(1)
+  id            String    @db.VarChar(30)
+  password      String    @db.VarChar(300)
+  name          String?   @db.VarChar(30)
+  is_active     Int       @default(1)
+  register_date DateTime  @default(now()) @db.Timestamp(0)
+  register      String?   @db.Char(8)
+  modify_date   DateTime? @db.Timestamp(0)
+  modifier      String?   @db.Char(8)
+  is_deleted    String    @default("N") @db.Char(1)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model alarm {
+  idx                           Int        @id @default(autoincrement())
+  type                          Int        @default(3)
+  title                         String     @db.VarChar(30)
+  content                       String?    @db.Text
+  link_url                      String?    @db.VarChar(255)
+  notice_json                   String?    @db.VarChar(255)
+  reserve_date                  DateTime?  @db.Date
+  reserve_time                  String?    @db.VarChar(6)
+  btn1_name                     String?    @db.VarChar(40)
+  btn1_link                     String?    @db.VarChar(255)
+  btn2_name                     String?    @db.VarChar(40)
+  btn2_link                     String?    @db.VarChar(255)
+  sender                        Int?
+  receiver                      Int?
+  receive_date                  DateTime?  @db.Timestamp(0)
+  register_date                 DateTime   @default(now()) @db.Timestamp(0)
+  is_hidden                     String     @default("N") @db.Char(1)
+  is_deleted                    String     @default("N") @db.Char(1)
+  chat_room_no                  Int?
+  campas_no                     Int?
+  member_alarm_senderTomember   member?    @relation("alarm_senderTomember", fields: [sender], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "alarm_member_FK")
+  member_alarm_receiverTomember member?    @relation("alarm_receiverTomember", fields: [receiver], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "alarm_member_FK2")
+  campas                        campas?    @relation(fields: [campas_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "campas_no_FK4")
+  chat_room                     chat_room? @relation(fields: [chat_room_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "chat_room_FK3")
+
+  @@index([sender], map: "alarm_member_FK")
+  @@index([receiver], map: "alarm_member_FK2")
+  @@index([campas_no], map: "campas_no_FK4")
+  @@index([chat_room_no], map: "chat_room_FK3")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model badge_pvoca {
+  idx                     Int      @id @default(autoincrement())
+  test_no                 Int?
+  campas_class_content_no Int?
+  type                    Int
+  register_date           DateTime @default(now()) @db.Timestamp(0)
+  student_no              Int
+  is_deleted              String   @default("N") @db.Char(1)
+  campas_class_no         Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model banner {
+  idx                 Int       @id @default(autoincrement())
+  location_type       Int
+  title               String    @db.VarChar(80)
+  content             String?   @db.Text
+  banner_image_pc     Int?
+  banner_image_mobile Int?
+  view_start_date     DateTime? @db.Date
+  view_end_date       DateTime? @db.Date
+  order               Int
+  link_type           Int
+  link_value          String?   @db.VarChar(255)
+  is_blank            Int
+  register_date       DateTime  @default(now()) @db.Timestamp(0)
+  modify_date         DateTime? @db.Timestamp(0)
+  is_deleted          String    @default("N") @db.Char(1)
+  view_page_type      Int?
+  btn_name            String?   @db.VarChar(50)
+  video_url           String?   @db.VarChar(200)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model banner_video {
+  idx         Int      @id @default(autoincrement())
+  seq_no      Boolean
+  type        Boolean
+  link        String?  @db.VarChar(200)
+  description String?  @db.VarChar(50)
+  is_view     Boolean  @default(true)
+  update_date DateTime @default(now()) @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model board {
+  idx                           Int       @id @default(autoincrement())
+  type                          Int       @db.TinyInt
+  event_start_date              DateTime? @db.Date
+  event_end_date                DateTime? @db.Date
+  is_top                        Int       @default(0) @db.TinyInt
+  thumbnail_no                  Int?
+  title                         String    @db.VarChar(100)
+  context                       String?   @db.LongText
+  notice_type                   Int       @default(0) @db.TinyInt
+  is_require_login              Int       @default(0) @db.TinyInt
+  is_view_btn                   Int       @default(0) @db.TinyInt
+  t_btn_name                    String?   @db.VarChar(40)
+  t_btn_color                   String?   @db.VarChar(10)
+  t_btn_link_url                String?   @db.VarChar(200)
+  t_btn_link_type               Int?      @db.TinyInt
+  s_btn_name                    String?   @db.VarChar(40)
+  s_btn_color                   String?   @db.VarChar(10)
+  s_btn_link_url                String?   @db.VarChar(200)
+  s_btn_link_type               Int?      @db.TinyInt
+  is_view                       Int       @default(1) @db.TinyInt
+  register                      Int?
+  register_date                 DateTime  @default(now()) @db.Timestamp(0)
+  modifier                      Int?
+  modify_date                   DateTime? @db.Timestamp(0)
+  is_deleted                    String    @default("N") @db.Char(1)
+  file                          file?     @relation(fields: [thumbnail_no], references: [idx], onUpdate: Restrict, map: "board_file_FK")
+  member_board_registerTomember member?   @relation("board_registerTomember", fields: [register], references: [idx], onUpdate: Restrict, map: "board_member_FK1")
+  member_board_modifierTomember member?   @relation("board_modifierTomember", fields: [modifier], references: [idx], onUpdate: Restrict, map: "board_member_FK2")
+
+  @@index([thumbnail_no], map: "board_file_FK")
+  @@index([register], map: "board_member_FK1")
+  @@index([modifier], map: "board_member_FK2")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model campas {
+  idx                             Int                   @id @default(autoincrement())
+  is_cedu                         Int                   @default(0)
+  logo_no                         Int?
+  mb_main_image                   Int?
+  email                           String?               @db.VarChar(100)
+  name                            String                @db.VarChar(30)
+  tel                             String                @db.VarChar(14)
+  postcode                        String                @db.VarChar(8)
+  sido                            String                @db.VarChar(10)
+  sigungu                         String                @db.VarChar(10)
+  dong                            String?               @db.VarChar(10)
+  address                         String                @db.VarChar(50)
+  detail_address                  String?               @db.VarChar(20)
+  total_class_count               Int                   @default(0)
+  teacher_count                   Int                   @default(0)
+  student_count                   Int                   @default(0)
+  main_card                       Int?
+  c1_company                      Int?
+  c1_no                           String?               @db.VarChar(20)
+  c1_secret                       Int?
+  c1_yynn                         String?               @db.VarChar(6)
+  c1_svg                          Int?
+  c2_company                      Int?
+  c2_no                           String?               @db.VarChar(20)
+  c2_secret                       Int?
+  c2_yymm                         String?               @db.VarChar(6)
+  c2_svg                          Int?
+  c3_company                      Int?
+  c3_no                           String?               @db.VarChar(20)
+  c3_secret                       Int?
+  c3_yymm                         String?               @db.VarChar(6)
+  c3_svg                          Int?
+  status                          String                @default("Y") @db.Char(1)
+  register_date                   DateTime              @default(now()) @db.Timestamp(0)
+  register                        Int
+  modify_date                     DateTime?             @db.Timestamp(0)
+  close_date                      DateTime?             @db.Timestamp(0)
+  is_deleted                      String                @default("N") @db.Char(1)
+  alarm                           alarm[]
+  file_campas_mb_main_imageTofile file?                 @relation("campas_mb_main_imageTofile", fields: [mb_main_image], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "campas_file_FK2")
+  member                          member                @relation(fields: [register], references: [idx], onUpdate: Restrict, map: "campas_member_FK")
+  file_campas_logo_noTofile       file?                 @relation("campas_logo_noTofile", fields: [logo_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "campase_file_FK")
+  campas_class                    campas_class[]
+  campas_class_badge              campas_class_badge[]  @ignore
+  campas_class_notice             campas_class_notice[]
+  campas_disposition              campas_disposition[]
+  campas_member                   campas_member[]
+  campas_subscrip                 campas_subscrip[]
+  chat_room                       chat_room[]
+
+  @@index([mb_main_image], map: "campas_file_FK2")
+  @@index([register], map: "campas_member_FK")
+  @@index([logo_no], map: "campase_file_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model campas_class {
+  idx                                    Int                            @id @default(autoincrement())
+  campas_no                              Int
+  title                                  String                         @db.VarChar(30)
+  color_hex                              String                         @db.VarChar(10)
+  teacher_no                             Int
+  student_count                          Int                            @default(0)
+  register                               Int
+  register_date                          DateTime                       @default(now()) @db.Timestamp(0)
+  modify_date                            DateTime?                      @db.Timestamp(0)
+  delete_date                            DateTime?                      @db.Timestamp(0)
+  is_deleted                             String                         @default("N") @db.Char(1)
+  class_code                             String?                        @db.VarChar(50)
+  product_no                             Int?
+  pvoca_cls_type                         Int?
+  sub_teacher_no                         Int?
+  use_class_code                         Int?
+  order_no                               Int?
+  product                                product?                       @relation(fields: [product_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "FK_campas_class_cedu.product")
+  campas                                 campas                         @relation(fields: [campas_no], references: [idx], onUpdate: Restrict, map: "campas_class_campas_FK")
+  member_campas_class_teacher_noTomember member                         @relation("campas_class_teacher_noTomember", fields: [teacher_no], references: [idx], onUpdate: Restrict, map: "campas_class_member_FK")
+  member_campas_class_registerTomember   member                         @relation("campas_class_registerTomember", fields: [register], references: [idx], onUpdate: Restrict, map: "campas_class_member_FK2")
+  campas_class_badge                     campas_class_badge[]           @ignore
+  campas_class_course                    campas_class_course[]
+  campas_class_course_bookmark           campas_class_course_bookmark[]
+  campas_class_notice                    campas_class_notice[]
+  campas_class_student                   campas_class_student[]
+  chat_room                              chat_room[]
+
+  @@index([product_no], map: "FK_campas_class_cedu.product")
+  @@index([campas_no], map: "campas_class_campas_FK")
+  @@index([teacher_no], map: "campas_class_member_FK")
+  @@index([register], map: "campas_class_member_FK2")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model campas_class_badge {
+  campas_no               Int
+  campas_class_no         Int
+  test_no                 Int?
+  campas_class_content_no Int?
+  type                    Int
+  register_date           DateTime              @default(now()) @db.Timestamp(0)
+  student_no              Int
+  is_deleted              String                @default("N") @db.Char(1)
+  campas                  campas                @relation(fields: [campas_no], references: [idx], onUpdate: Restrict, map: "campas_class_badge_campas_FK")
+  campas_class            campas_class          @relation(fields: [campas_class_no], references: [idx], onUpdate: Restrict, map: "campas_class_badge_campas_class_FK")
+  campas_class_content    campas_class_content? @relation(fields: [campas_class_content_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "campas_class_badge_content_no_FK")
+  content_test            content_test?         @relation(fields: [test_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "campas_class_badge_content_test_FK")
+  member                  member                @relation(fields: [student_no], references: [idx], onUpdate: Restrict, map: "campas_class_badge_member_FK")
+
+  @@index([campas_no], map: "campas_class_badge_campas_FK")
+  @@index([campas_class_no], map: "campas_class_badge_campas_class_FK")
+  @@index([campas_class_content_no], map: "campas_class_badge_content_no_FK")
+  @@index([test_no], map: "campas_class_badge_content_test_FK")
+  @@index([student_no], map: "campas_class_badge_member_FK")
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model campas_class_content {
+  idx                        Int                          @id @default(autoincrement())
+  campas_class_course_no     Int
+  content_factory_no         Int
+  group_id                   String?                      @db.VarChar(20)
+  group_no                   Int?
+  order                      Int                          @default(0)
+  dead_line                  DateTime                     @default(dbgenerated("('0000-00-00')")) @db.Date
+  register_date              DateTime                     @default(now()) @db.Timestamp(0)
+  modify_date                DateTime?                    @db.Timestamp(0)
+  is_deleted                 String                       @default("N") @db.VarChar(1)
+  campas_class_badge         campas_class_badge[]         @ignore
+  campas_class_course        campas_class_course          @relation(fields: [campas_class_course_no], references: [idx], onUpdate: Restrict, map: "campas_class_content_campas_class_course_FK")
+  content_factory            content_factory              @relation(fields: [content_factory_no], references: [idx], onUpdate: Restrict, map: "campas_class_content_content_factory_FK")
+  content_test               content_test[]
+  content_user_video         content_user_video[]         @ignore
+  student_test_score_history student_test_score_history[]
+  teacher_comment            teacher_comment[]
+
+  @@index([campas_class_course_no], map: "campas_class_content_campas_class_course_FK")
+  @@index([content_factory_no], map: "campas_class_content_content_factory_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model campas_class_course {
+  idx                          Int                            @id @default(autoincrement())
+  class_no                     Int
+  course_no                    Int
+  title                        String                         @db.VarChar(60)
+  study_start                  DateTime?                      @db.Date
+  study_end                    DateTime?                      @db.Date
+  week_list                    String?                        @db.VarChar(20)
+  ai_score_type                Int                            @default(0)
+  pass_score                   Int?
+  voca_test_speed              Int?
+  voca_test_pass_score         Int?
+  use_question                 Int                            @default(1)
+  register_date                DateTime                       @default(now()) @db.Timestamp(0)
+  modify_date                  DateTime?                      @db.Timestamp(0)
+  is_deleted                   String                         @default("N") @db.Char(1)
+  pv_timer_type                Int?
+  pv_timer                     Int?
+  pv_learning                  Int?
+  is_open_tr_description       Int?
+  is_open_tr_score             Int?
+  is_open_test_score           Int?
+  is_open_test_correct         Int?
+  is_complete                  Int?
+  order_no                     Int?
+  campas_class_content         campas_class_content[]
+  campas_class                 campas_class                   @relation(fields: [class_no], references: [idx], onUpdate: Restrict, map: "campas_class_course_campas_class_FK")
+  content_course               content_course                 @relation(fields: [course_no], references: [idx], onUpdate: Restrict, map: "campas_class_course_content_course_FK")
+  campas_class_course_bookmark campas_class_course_bookmark[]
+  content_test                 content_test[]
+  student_test_score_history   student_test_score_history[]
+
+  @@index([class_no], map: "campas_class_course_campas_class_FK")
+  @@index([course_no], map: "campas_class_course_content_course_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model campas_class_course_bookmark {
+  idx                 Int                  @id @default(autoincrement())
+  class_no            Int?
+  class_course_no     Int?
+  register            Int?
+  register_date       DateTime             @default(now()) @db.Timestamp(0)
+  type                Int                  @default(0)
+  last_update_date    DateTime?            @db.Timestamp(0)
+  campas_class        campas_class?        @relation(fields: [class_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "campas_class_course_bookmark_ibfk_1")
+  campas_class_course campas_class_course? @relation(fields: [class_course_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "campas_class_course_bookmark_ibfk_2")
+  member              member?              @relation(fields: [register], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "campas_class_course_bookmark_ibfk_3")
+
+  @@index([class_course_no], map: "class_course_no")
+  @@index([class_no], map: "class_no")
+  @@index([register], map: "register")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model campas_class_notice {
+  idx                        Int                          @id @default(autoincrement())
+  campas_no                  Int?
+  class_no                   Int?
+  contents                   String?                      @db.VarChar(2000)
+  link_name                  String?                      @db.VarChar(200)
+  link_url                   String?                      @db.VarChar(200)
+  register_date              DateTime                     @default(now()) @db.Timestamp(0)
+  is_deleted                 String                       @default("N") @db.Char(1)
+  start_date                 DateTime?                    @db.Timestamp(0)
+  end_date                   DateTime?                    @db.Timestamp(0)
+  last_update_date           DateTime?                    @db.Timestamp(0)
+  file_idx                   Int?
+  register                   Int?
+  last_modify_register       Int?
+  campas                     campas?                      @relation(fields: [campas_no], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "campas_class_campas_no_FK")
+  campas_class               campas_class?                @relation(fields: [class_no], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "campas_class_notice_class_no_FK")
+  member                     member?                      @relation(fields: [register], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "campas_class_notice_register_FK")
+  campas_class_notice_member campas_class_notice_member[]
+
+  @@index([campas_no], map: "campas_class_campas_no_FK")
+  @@index([class_no], map: "campas_class_notice_class_no_FK")
+  @@index([register], map: "campas_class_notice_register_FK")
+}
+
+model campas_class_notice_member {
+  idx                 Int                  @id @default(autoincrement())
+  notice_no           Int?
+  register_no         Int?
+  class_no            Int?
+  register_date       DateTime             @default(now()) @db.Timestamp(0)
+  modify_date         DateTime?            @db.Timestamp(0)
+  is_deleted          String?              @default("N") @db.VarChar(1)
+  access_type         String               @default("P") @db.VarChar(1)
+  campas_class_notice campas_class_notice? @relation(fields: [notice_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "campas_class_notice_member_ibfk_1")
+  member              member?              @relation(fields: [register_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "campas_class_notice_member_ibfk_2")
+
+  @@index([notice_no], map: "notice_no")
+  @@index([register_no], map: "register_no")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model campas_class_student {
+  idx                   Int          @id @default(autoincrement())
+  c_class_no            Int
+  student_no            Int
+  teacher_memo          String?      @db.VarChar(100)
+  register_date         DateTime     @default(now()) @db.Timestamp(0)
+  withdraw_date         DateTime?    @db.Timestamp(0)
+  withdraw_request_date DateTime?    @db.Timestamp(0)
+  campas_class          campas_class @relation(fields: [c_class_no], references: [idx], onUpdate: Restrict, map: "campas_class_student_campas_class_FK")
+  member                member       @relation(fields: [student_no], references: [idx], onUpdate: Restrict, map: "campas_class_student_member_FK")
+
+  @@index([c_class_no], map: "campas_class_student_campas_class_FK")
+  @@index([student_no], map: "campas_class_student_member_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model campas_disposition {
+  idx                                                Int       @id @default(autoincrement())
+  campas_no                                          Int
+  prev_member_no                                     Int
+  change_member_no                                   Int
+  active_class_count                                 Int
+  active_teacher_count                               Int
+  active_student_count                               Int
+  product_no                                         Int?
+  register_date                                      DateTime  @default(now()) @db.Timestamp(0)
+  disposition_date                                   DateTime? @db.Timestamp(0)
+  is_deletd                                          String    @default("N") @db.Char(1)
+  campas                                             campas    @relation(fields: [campas_no], references: [idx], onUpdate: Restrict, map: "campas_disposition_campas_FK")
+  member_campas_disposition_prev_member_noTomember   member    @relation("campas_disposition_prev_member_noTomember", fields: [prev_member_no], references: [idx], onUpdate: Restrict, map: "campas_disposition_member_FK")
+  member_campas_disposition_change_member_noTomember member    @relation("campas_disposition_change_member_noTomember", fields: [change_member_no], references: [idx], onUpdate: Restrict, map: "campas_disposition_member_FK2")
+
+  @@index([campas_no], map: "campas_disposition_campas_FK")
+  @@index([prev_member_no], map: "campas_disposition_member_FK")
+  @@index([change_member_no], map: "campas_disposition_member_FK2")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model campas_member {
+  idx                   Int       @id @default(autoincrement())
+  campas_no             Int
+  type                  Int
+  member_no             Int
+  status                Int       @default(1)
+  invite_date           DateTime? @db.Timestamp(0)
+  register_date         DateTime  @default(now()) @db.Timestamp(0)
+  withdraw_type         Int?
+  withdraw_request_date DateTime? @db.Timestamp(0)
+  withdraw_date         DateTime? @db.Timestamp(0)
+  withdraw_manager      Int?
+  is_deleted            String    @default("N") @db.Char(1)
+  campas                campas    @relation(fields: [campas_no], references: [idx], onUpdate: Restrict, map: "campas_member_campas_FK")
+  member                member    @relation(fields: [member_no], references: [idx], onUpdate: Restrict, map: "campas_member_member_FK")
+
+  @@index([campas_no], map: "campas_member_campas_FK")
+  @@index([member_no], map: "campas_member_member_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model campas_subscrip {
+  idx                 Int       @id @default(autoincrement())
+  campas_no           Int
+  order_no            Int
+  start_date          DateTime  @db.Date
+  expire_date         DateTime  @db.Date
+  register            Int
+  register_date       DateTime  @default(now()) @db.Timestamp(0)
+  status              Int       @default(1)
+  request_cancel_date DateTime? @db.Timestamp(0)
+  cancel_date         DateTime? @db.Timestamp(0)
+  is_deleted          String    @default("N") @db.Char(1)
+  is_b2c              Int?
+  campas              campas    @relation(fields: [campas_no], references: [idx], onUpdate: Restrict, map: "campas_subscrip_campas_FK")
+  member              member    @relation(fields: [register], references: [idx], onUpdate: Restrict, map: "campas_subscrip_member_FK")
+  order               order     @relation(fields: [order_no], references: [idx], onUpdate: Restrict, map: "campas_subscrip_order_FK")
+
+  @@index([campas_no], map: "campas_subscrip_campas_FK")
+  @@index([register], map: "campas_subscrip_member_FK")
+  @@index([order_no], map: "campas_subscrip_order_FK")
+}
+
+model campus_class_content_comment {
+  idx           Int       @id @default(autoincrement())
+  content_no    Int
+  comment       String?   @db.VarChar(2000)
+  student_no    Int
+  register      Int
+  register_date DateTime? @db.Date
+  is_deleted    String?   @default("N") @db.Char(1)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model chat {
+  idx                          Int       @id @default(autoincrement())
+  room_no                      Int
+  type                         Int       @db.UnsignedInt
+  text                         String?   @db.Text
+  sender                       Int
+  sender_date                  DateTime  @default(now()) @db.Timestamp(0)
+  receiver                     Int
+  receiver_date                DateTime? @db.Timestamp(0)
+  file_list                    String?   @db.VarChar(100)
+  is_deleted                   String    @default("N") @db.Char(1)
+  chat_room                    chat_room @relation(fields: [room_no], references: [idx], onUpdate: Restrict, map: "chat_chat_room_FK")
+  member_chat_senderTomember   member    @relation("chat_senderTomember", fields: [sender], references: [idx], onUpdate: Restrict, map: "chat_member_FK")
+  member_chat_receiverTomember member    @relation("chat_receiverTomember", fields: [receiver], references: [idx], onUpdate: Restrict, map: "chat_member_FK2")
+
+  @@index([room_no], map: "chat_chat_room_FK")
+  @@index([sender], map: "chat_member_FK")
+  @@index([receiver], map: "chat_member_FK2")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model chat_attend {
+  room_no       Int
+  member_type   Int?
+  member_no     Int
+  register_date DateTime  @default(now()) @db.Timestamp(0)
+  is_deleted    String    @default("N") @db.Char(1)
+  delete_date   DateTime? @db.Timestamp(0)
+  chat_room     chat_room @relation(fields: [room_no], references: [idx], onUpdate: Restrict, map: "chat_attend_chat_room_FK")
+  member        member    @relation(fields: [member_no], references: [idx], onUpdate: Restrict, map: "chat_attend_member_FK")
+
+  @@index([room_no], map: "chat_attend_chat_room_FK")
+  @@index([member_no], map: "chat_attend_member_FK")
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model chat_room {
+  idx             Int           @id @default(autoincrement())
+  campas_no       Int
+  campas_class_no Int
+  title           String?       @db.VarChar(60)
+  registesr_date  DateTime      @default(now()) @db.Timestamp(0)
+  is_deleted      String        @default("N") @db.Char(1)
+  alarm           alarm[]
+  chat            chat[]
+  chat_attend     chat_attend[] @ignore
+  campas          campas        @relation(fields: [campas_no], references: [idx], onUpdate: Restrict, map: "chat_room_campas_FK")
+  campas_class    campas_class  @relation(fields: [campas_class_no], references: [idx], onUpdate: Restrict, map: "chat_room_campas_class_FK")
+
+  @@index([campas_no], map: "chat_room_campas_FK")
+  @@index([campas_class_no], map: "chat_room_campas_class_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_answer_sheet {
+  idx                                  Int                                @id @default(autoincrement())
+  test_no                              Int
+  student_no                           Int
+  content_factory_no                   Int
+  content_factory_question_no          Int?
+  content_voca_question_no             Int?
+  content_voca_question_type           Int?
+  content_test_teacher_question_no     Int?
+  content_voca_teacher_question_no     Int?
+  content_voca_teacher_question_type   Int?
+  cedu_api_qcode                       String?                            @db.VarChar(45)
+  cedu_id                              Int?
+  content_special_training_question_no Int?
+  phrase_type                          Int?
+  solve_type                           Int?
+  question_index                       String?                            @db.VarChar(10)
+  write_answer                         String?                            @db.Text
+  sub_write_answer                     String?                            @db.Text
+  correct_answer                       String?                            @db.Text
+  is_answer                            Int
+  exam_time                            String?                            @db.VarChar(7)
+  play_time                            Int?
+  passages                             String?                            @db.Text
+  register_date                        DateTime                           @default(now()) @db.Timestamp(0)
+  is_deleted                           String                             @default("N") @db.Char(1)
+  pvoca_image_id                       Int?
+  pm_word                              String?                            @db.VarChar(50)
+  pvoca_example                        Int?
+  content_voca_teacher_question        content_voca_teacher_question?     @relation(fields: [content_voca_teacher_question_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "content_answer_sheet_conent_voca_teacher_question_FK")
+  content_factory                      content_factory                    @relation(fields: [content_factory_no], references: [idx], onUpdate: Restrict, map: "content_answer_sheet_content_factory_FK")
+  content_factory_question             content_factory_question?          @relation(fields: [content_factory_question_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "content_answer_sheet_content_factory_question_FK")
+  content_special_training_question    content_special_training_question? @relation(fields: [content_special_training_question_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "content_answer_sheet_content_special_training_question_no")
+  content_test                         content_test                       @relation(fields: [test_no], references: [idx], onDelete: Cascade, onUpdate: Restrict, map: "content_answer_sheet_content_test_FK")
+  content_test_teacher_question        content_test_teacher_question?     @relation(fields: [content_test_teacher_question_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "content_answer_sheet_content_test_teacher_question_FK")
+  content_voca_question                content_voca_question?             @relation(fields: [content_voca_question_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "content_answer_sheet_content_voca_question_FK")
+  member                               member                             @relation(fields: [student_no], references: [idx], onUpdate: Restrict, map: "content_answer_sheet_member_FK")
+
+  @@index([content_voca_teacher_question_no], map: "content_answer_sheet_conent_voca_teacher_question_FK")
+  @@index([content_factory_no], map: "content_answer_sheet_content_factory_FK")
+  @@index([content_factory_question_no], map: "content_answer_sheet_content_factory_question_FK")
+  @@index([content_special_training_question_no], map: "content_answer_sheet_content_special_training_question_no")
+  @@index([test_no], map: "content_answer_sheet_content_test_FK")
+  @@index([content_test_teacher_question_no], map: "content_answer_sheet_content_test_teacher_question_FK")
+  @@index([content_voca_question_no], map: "content_answer_sheet_content_voca_question_FK")
+  @@index([student_no], map: "content_answer_sheet_member_FK")
+  @@index([question_index], map: "content_answer_sheet_question_index")
+  @@index([register_date], map: "content_answer_sheet_register_date")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_bookmark {
+  content_factory_no Int
+  type               Int             @default(0)
+  register           Int
+  register_date      DateTime        @default(now()) @db.Timestamp(0)
+  content_factory    content_factory @relation(fields: [content_factory_no], references: [idx], onUpdate: Restrict, map: "content_bookmark_content_factory_FK")
+  member             member          @relation(fields: [register], references: [idx], onUpdate: Restrict, map: "content_bookmark_member_FK")
+
+  @@index([content_factory_no], map: "content_bookmark_content_factory_FK")
+  @@index([register], map: "content_bookmark_member_FK")
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_course {
+  idx                                    Int                       @id @default(autoincrement())
+  copy_type                              Int?
+  copy_course_no                         Int?
+  level                                  Int?
+  title                                  String                    @db.VarChar(60)
+  is_public                              Int                       @default(0)
+  is_cedu                                Int                       @default(0)
+  is_auto                                Int                       @default(0)
+  register                               Int
+  register_date                          DateTime                  @default(now()) @db.Timestamp(0)
+  modifier                               Int?
+  modify_date                            DateTime?                 @db.Timestamp(0)
+  is_deleted                             String                    @default("N") @db.Char(1)
+  folder_no                              Int?
+  memo                                   String?                   @db.VarChar(60)
+  recommend                              Int?
+  recommend_order                        Int?
+  best                                   Int?
+  best_order                             Int?
+  campas_class_course                    campas_class_course[]
+  member_content_course_registerTomember member                    @relation("content_course_registerTomember", fields: [register], references: [idx], onUpdate: Restrict, map: "content_course_member_FK")
+  member_content_course_modifierTomember member?                   @relation("content_course_modifierTomember", fields: [modifier], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "content_course_member_FK2")
+  content_course_bookmark                content_course_bookmark[] @ignore
+  content_course_data                    content_course_data[]     @ignore
+  content_test                           content_test[]
+  product_course                         product_course[]          @ignore
+  report                                 report[]
+
+  @@index([register], map: "content_course_member_FK")
+  @@index([modifier], map: "content_course_member_FK2")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_course_bookmark {
+  content_course_no Int
+  type              Int            @default(0)
+  register          Int
+  register_date     DateTime       @default(now()) @db.Timestamp(0)
+  content_course    content_course @relation(fields: [content_course_no], references: [idx], onUpdate: Restrict, map: "content_course_no_FK")
+
+  @@index([register], map: "content_bookmark_member_FK")
+  @@index([content_course_no], map: "content_course_no_FK")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_course_data {
+  course_no          Int
+  content_factory_no Int
+  group_id           Int?
+  order              Int             @default(0)
+  register           Int
+  register_date      DateTime        @default(now()) @db.Timestamp(0)
+  modify_date        DateTime?       @db.Timestamp(0)
+  is_deleted         String          @default("N") @db.Char(1)
+  content_course     content_course  @relation(fields: [course_no], references: [idx], onUpdate: Restrict, map: "content_course_data_content_course_FK")
+  content_factory    content_factory @relation(fields: [content_factory_no], references: [idx], onUpdate: Restrict, map: "content_course_data_content_factory_FK")
+  member             member          @relation(fields: [register], references: [idx], onUpdate: Restrict, map: "content_course_data_member_FK")
+
+  @@index([course_no], map: "content_course_data_content_course_FK")
+  @@index([content_factory_no], map: "content_course_data_content_factory_FK")
+  @@index([register], map: "content_course_data_member_FK")
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_factory {
+  idx                                     Int                                @id @default(autoincrement())
+  copy_type                               Int?
+  copy_factory_no                         Int?
+  copy_master_factory_no                  Int?
+  type                                    Int?
+  special_training_category               Int?
+  special_training_no                     Int?
+  min_level                               Int?
+  max_level                               Int?
+  title                                   String?                            @db.VarChar(200)
+  video_url                               String?                            @db.VarChar(250)
+  api_book_id                             String?                            @db.VarChar(200)
+  api_meta_id                             String?                            @db.VarChar(200)
+  question_count                          Int                                @default(0)
+  tr_is_comment                           Int?
+  tr_is_public                            Int?
+  tr_is_direct                            Int?
+  tr_is_direct_analysis                   Int?
+  tr_is_scrap                             Int?
+  tr_is_composition                       Int?
+  ex_time                                 Int?
+  ex_case                                 Int?
+  ex_default_option                       Int?
+  ex_select_count                         Int?
+  ex_re_test                              Int?
+  ex_voice_url                            String?                            @db.VarChar(250)
+  ex_voice_starttime                      Int?
+  ex_is_public                            Int?
+  ex_start_text                           String?                            @db.VarChar(110)
+  ex_finish_text                          String?                            @db.VarChar(110)
+  ex_temp_save                            Int?
+  vc_is_example                           Int?
+  vc_order                                Int?
+  vc_templete                             String?                            @db.LongText
+  vc_templete_print                       String?                            @db.LongText
+  vr_is_word_card                         Int?
+  vr_is_word_meaning                      Int?
+  vr_is_ans_meaning                       Int?
+  vr_is_select_blank                      Int?
+  vr_is_write_blank                       Int?
+  vr_is_write_word                        Int?
+  vr_is_matching_word                     Int?
+  vr_is_word_hint                         Int?
+  vr_is_blank_hint                        Int?
+  vr_is_couple_match                      Int?
+  vt_meaning_count                        Int?
+  vt_word_meaning_count                   Int?
+  vt_write_word_count                     Int?
+  vt_select_blank_count                   Int?
+  vt_write_blank_count                    Int?
+  vt_is_word_hint                         Int?
+  vt_is_blank_hint                        Int?
+  is_cedu                                 Int                                @default(0)
+  register                                Int
+  register_date                           DateTime                           @default(now()) @db.Timestamp(0)
+  modifier                                Int?
+  modify_date                             DateTime?                          @db.Timestamp(0)
+  create_id                               String?                            @db.VarChar(30)
+  is_deleted                              String                             @default("N") @db.Char(1)
+  pvc_order                               Int?
+  pvc_level                               Int?
+  pvc_memo                                String?                            @db.VarChar(200)
+  pvr_mem_way                             Int?
+  pvt_exam_timemin                        Int?
+  pvc_pick_meaning                        Int?
+  pvc_pick_meanexample                    Int?
+  pvc_pick_enword                         Int?
+  pvc_pick_spell                          Int?
+  pvc_write_spell                         Int?
+  pvc_write_spell_hint                    Int?
+  pvc_write_spellexample                  Int?
+  pvc_write_spellexample_hint             Int?
+  pvc_pick_synano                         Int?
+  pvc_pick_ox                             Int?
+  pvc_order_option                        Int?
+  pvc_img_url                             String?                            @db.VarChar(500)
+  memo                                    String?                            @db.VarChar(50)
+  pvc_unit_list                           String?                            @db.VarChar(500)
+  ex_voice_file_no                        Int?
+  folder_no                               Int?
+  campas_class_content                    campas_class_content[]
+  content_answer_sheet                    content_answer_sheet[]
+  content_bookmark                        content_bookmark[]                 @ignore
+  content_course_data                     content_course_data[]              @ignore
+  content_special_training                content_special_training?          @relation(fields: [special_training_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "content_factory_content_special_training_FK")
+  content_special_training_category       content_special_training_category? @relation(fields: [special_training_category], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "content_factory_content_special_training_category_FK")
+  member_content_factory_registerTomember member                             @relation("content_factory_registerTomember", fields: [register], references: [idx], onUpdate: Restrict, map: "content_factory_member_FK")
+  member_content_factory_modifierTomember member?                            @relation("content_factory_modifierTomember", fields: [modifier], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "content_factory_member_FK2")
+  content_factory                         content_factory?                   @relation("content_factoryTocontent_factory", fields: [copy_factory_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "content_factory_self_FK")
+  other_content_factory                   content_factory[]                  @relation("content_factoryTocontent_factory")
+  content_factory_question                content_factory_question[]
+  content_pvoca_question                  content_pvoca_question[]
+  content_test_print_history              content_test_print_history[]       @ignore
+  content_test_teacher_question           content_test_teacher_question[]
+  content_voca_my_question                content_voca_my_question[]         @ignore
+  content_voca_teacher_question           content_voca_teacher_question[]
+  report                                  report[]
+
+  @@index([special_training_no], map: "content_factory_content_special_training_FK")
+  @@index([special_training_category], map: "content_factory_content_special_training_category_FK")
+  @@index([copy_master_factory_no], map: "content_factory_copy_master_factory_no_IDX")
+  @@index([register], map: "content_factory_member_FK")
+  @@index([modifier], map: "content_factory_member_FK2")
+  @@index([copy_factory_no], map: "content_factory_self_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_factory_question {
+  idx                  Int                    @id @default(autoincrement())
+  content_factory_no   Int
+  api_id               String?                @db.VarChar(20)
+  api_meta_id          String?                @db.VarChar(200)
+  api_qtype            String?                @db.VarChar(10)
+  api_qtype_sub        String?                @db.VarChar(10)
+  api_qcode            String?                @db.VarChar(45)
+  api_level            String?                @db.VarChar(100)
+  publish_id           String?                @db.VarChar(40)
+  publish              String?                @db.Text
+  classification       String?                @db.VarChar(10)
+  unit                 String?                @db.VarChar(200)
+  main_category        String?                @db.VarChar(40)
+  sub_category         String?                @db.VarChar(40)
+  is_group             Int?
+  it1                  String?                @db.VarChar(80)
+  it2                  String?                @db.VarChar(80)
+  it3                  String?                @db.VarChar(80)
+  json_group_list      String?                @db.Text
+  composition_title    String?                @db.Text
+  register             Int
+  register_date        DateTime               @default(now()) @db.Timestamp(0)
+  is_deleted           String?                @default("N") @db.Char(1)
+  content_answer_sheet content_answer_sheet[]
+  content_factory      content_factory        @relation(fields: [content_factory_no], references: [idx], onUpdate: Restrict, map: "content_factory_question_content_factory_FK")
+  member               member                 @relation(fields: [register], references: [idx], onUpdate: Restrict, map: "content_factory_question_member_FK")
+
+  @@index([api_id], map: "content_factory_question_api_id")
+  @@index([content_factory_no], map: "content_factory_question_content_factory_FK")
+  @@index([register], map: "content_factory_question_member_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_folder {
+  idx           Int                 @id @default(autoincrement())
+  type          content_folder_type
+  title         String              @db.VarChar(20)
+  register      Int
+  register_date DateTime            @default(now()) @db.Timestamp(0)
+  modify_date   DateTime?           @db.Timestamp(0)
+  member        member              @relation(fields: [register], references: [idx], onDelete: Cascade, onUpdate: Restrict, map: "content_folder_TO_member_FK")
+
+  @@index([register], map: "content_folder_TO_member_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_pvoca_evaluation {
+  idx                     Int      @id @default(autoincrement())
+  campas_class_content_no Int
+  member_no               Int
+  eval1                   Int?
+  eval2                   Int?
+  eval3                   Int?
+  register_date           DateTime @default(now()) @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_pvoca_my_question {
+  idx                Int       @id @default(autoincrement())
+  content_factory_no Int
+  unit_no            Int       @default(0)
+  question_no_list   String    @default("0") @db.VarChar(2000)
+  pm_id_list         String    @db.VarChar(2000)
+  register           Int
+  register_date      DateTime  @default(now()) @db.Timestamp(0)
+  modifier           Int?
+  modify_date        DateTime? @db.Timestamp(0)
+  is_deleted         String    @default("N") @db.Char(1)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_pvoca_my_question_sub {
+  idx                     Int     @id @default(autoincrement())
+  myquestion_id           Int
+  pm_id                   Int
+  bogi1                   String? @db.VarChar(200)
+  bogi2                   String? @db.VarChar(200)
+  bogi3                   String? @db.VarChar(200)
+  bogi4                   String? @db.VarChar(200)
+  bogi5                   String? @db.VarChar(200)
+  etc                     String? @db.VarChar(2000)
+  etc1                    String? @db.VarChar(2000)
+  answer                  String? @db.VarChar(200)
+  campas_class_content_no Int
+  pvoca_type              String  @db.VarChar(50)
+
+  @@index([campas_class_content_no, pm_id], map: "idx_content_pvoca_my_question_sub_content_no_pm_id")
+  @@index([myquestion_id], map: "myquestion_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_pvoca_question {
+  idx                Int             @id @default(autoincrement())
+  content_factory_no Int
+  pm_id              Int
+  word               String          @db.VarChar(60)
+  order              Int             @default(0)
+  register           Int
+  register_date      DateTime        @default(now()) @db.Timestamp(0)
+  is_deleted         String          @default("N") @db.Char(1)
+  wtype              Int?
+  unit_id            Int?
+  pos                Int?
+  unit_pos           Int?
+  book_id            Int?
+  content_factory    content_factory @relation(fields: [content_factory_no], references: [idx], onUpdate: Restrict, map: "content_pvoca_question_content_factory_FK")
+
+  @@index([content_factory_no], map: "content_factory_no")
+  @@index([content_factory_no, idx], map: "content_pvoca_question_idx_content_factory_no")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_pvoca_question_unused {
+  idx                Int      @id @default(autoincrement())
+  content_factory_no Int
+  pm_id              Int
+  word               String   @db.VarChar(60)
+  order              Int      @default(0)
+  register           Int
+  register_date      DateTime @default(now()) @db.Timestamp(0)
+  is_deleted         String   @default("N") @db.Char(1)
+  wtype              Int?
+  unit_id            Int?
+  pos                Int?
+  unit_pos           Int?
+  book_id            Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_special_training {
+  idx                               Int                                 @id @default(autoincrement())
+  category_no                       Int
+  api_book_id                       String?                             @db.VarChar(200)
+  title                             String?                             @db.VarChar(80)
+  register_date                     DateTime                            @default(now()) @db.Timestamp(0)
+  modify_date                       DateTime?                           @db.Timestamp(0)
+  is_deleted                        String                              @default("N") @db.Char(1)
+  is_active                         String                              @default("Y") @db.Char(1)
+  ord                               Int?                                @default(0)
+  content_factory                   content_factory[]
+  content_special_training_category content_special_training_category   @relation(fields: [category_no], references: [idx], onUpdate: Restrict, map: "content_special_training_content_special_training_category_FK")
+  content_special_training_question content_special_training_question[]
+
+  @@index([category_no], map: "content_special_training_content_special_training_category_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_special_training_category {
+  idx                      Int                        @id @default(autoincrement())
+  name                     String                     @db.VarChar(50)
+  register_date            DateTime                   @default(now()) @db.Timestamp(0)
+  modify_date              DateTime?                  @db.Timestamp(0)
+  is_deleted               String                     @default("N") @db.Char(1)
+  is_active                String                     @default("Y") @db.Char(1)
+  content_factory          content_factory[]
+  content_special_training content_special_training[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_special_training_question {
+  idx                      Int                      @id @default(autoincrement())
+  code                     String?                  @db.VarChar(10)
+  special_training_no      Int
+  type                     String                   @db.VarChar(20)
+  instruction              String                   @db.VarChar(200)
+  question                 String?                  @db.VarChar(200)
+  ans_1                    String                   @db.VarChar(50)
+  ans_2                    String?                  @db.VarChar(50)
+  ans_3                    String?                  @db.VarChar(50)
+  ans_4                    String?                  @db.VarChar(50)
+  ans_5                    String?                  @db.VarChar(50)
+  ans1_text                String?                  @db.VarChar(30)
+  ans2_text                String?                  @db.VarChar(30)
+  ans3_text                String?                  @db.VarChar(30)
+  ans4_text                String?                  @db.VarChar(30)
+  ans5_text                String?                  @db.VarChar(30)
+  ans_sub1                 Int?
+  ans_sub2                 Int?
+  ans_sub3                 Int?
+  ans_sub4                 Int?
+  ans_sub5                 Int?
+  register_date            DateTime                 @default(now()) @db.Timestamp(0)
+  is_deleted               String                   @default("N") @db.Char(1)
+  content_answer_sheet     content_answer_sheet[]
+  content_special_training content_special_training @relation(fields: [special_training_no], references: [idx], onUpdate: Restrict, map: "content_special_training_question_content_special_training_FK")
+
+  @@index([special_training_no], map: "content_special_training_question_content_special_training_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_test {
+  idx                        Int                          @id @default(autoincrement())
+  type                       Int
+  course_no                  Int
+  campas_class_course_no     Int?
+  campas_class_content_no    Int?
+  video_play_time            String?                      @db.VarChar(10)
+  video_total_play_time      String?                      @db.VarChar(10)
+  done_time                  String                       @default("00:00") @db.VarChar(10)
+  tr_type                    Int?
+  total_count                Int                          @default(0)
+  total_question_count       Int                          @default(0)
+  current_count              Int                          @default(0)
+  phrase_question_index      Int                          @default(0)
+  phrase_direct_count        Int                          @default(0)
+  phrase_sub_page            Int                          @default(0)
+  composition_title          String?                      @db.Text
+  is_ai_clinic               Int                          @default(0)
+  is_ai_clinic_retry         Int?
+  ai_clinic_list             String?                      @db.Text
+  total_correct_count        Int                          @default(0)
+  status                     Int
+  is_over_time               Int?
+  score                      Float?                       @db.Float
+  register                   Int
+  register_date              DateTime                     @default(now()) @db.Timestamp(0)
+  finish_date                DateTime?                    @db.Timestamp(0)
+  is_deleted                 String                       @default("N") @db.Char(1)
+  pvoca_mem_type             String?                      @db.VarChar(100)
+  pvoca_q_list               String?                      @db.LongText
+  is_retry                   Int?                         @default(0)
+  campas_class_badge         campas_class_badge[]         @ignore
+  content_answer_sheet       content_answer_sheet[]
+  campas_class_content       campas_class_content?        @relation(fields: [campas_class_content_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "content_test_campas_class_content_FK")
+  campas_class_course        campas_class_course?         @relation(fields: [campas_class_course_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "content_test_campas_class_course_FK")
+  content_course             content_course               @relation(fields: [course_no], references: [idx], onUpdate: Restrict, map: "content_test_content_course_FK")
+  member                     member                       @relation(fields: [register], references: [idx], onUpdate: Restrict, map: "content_test_member_FK")
+  student_test_score_history student_test_score_history[]
+
+  @@index([campas_class_content_no], map: "content_test_campas_class_content_FK")
+  @@index([campas_class_course_no], map: "content_test_campas_class_course_FK")
+  @@index([course_no], map: "content_test_content_course_FK")
+  @@index([register], map: "content_test_member_FK")
+  @@index([register_date], map: "content_test_register_date")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_test_print_history {
+  content_factory_no Int
+  print_layout       Int
+  is_visible_answer  Int             @default(0)
+  font_size          Int             @default(0)
+  write_space        Int             @default(0)
+  paper_size         Int             @default(1)
+  register           Int
+  register_date      DateTime        @default(now()) @db.Timestamp(0)
+  content_factory    content_factory @relation(fields: [content_factory_no], references: [idx], onUpdate: Restrict, map: "content_test_print_history_content_factory_FK")
+  member             member          @relation(fields: [register], references: [idx], onUpdate: Restrict, map: "content_test_print_history_member_FK")
+
+  @@index([content_factory_no], map: "content_test_print_history_content_factory_FK")
+  @@index([register], map: "content_test_print_history_member_FK")
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_test_teacher_question {
+  idx                                 Int                             @id @default(autoincrement())
+  parent_no                           Int?
+  content_factory_no                  Int
+  type                                Int
+  instruction                         String?                         @db.VarChar(200)
+  img_list                            String?                         @db.VarChar(100)
+  question                            String?                         @db.VarChar(80)
+  content                             String?                         @db.Text
+  explain                             String?                         @db.Text
+  ans_count                           Int?
+  ans_1                               String?                         @db.VarChar(200)
+  ans_2                               String?                         @db.VarChar(200)
+  ans_3                               String?                         @db.VarChar(200)
+  ans_4                               String?                         @db.VarChar(200)
+  ans_5                               String?                         @db.VarChar(200)
+  ans_sub1                            Int?
+  ans_sub2                            Int?
+  ans_sub3                            Int?
+  ans_sub4                            Int?
+  ans_sub5                            Int?
+  score                               Int                             @default(0)
+  score_ans1                          Int?
+  score_ans2                          Int?
+  score_ans3                          Int?
+  score_ans4                          Int?
+  score_ans5                          Int?
+  order                               Int?                            @default(0)
+  register                            Int
+  register_date                       DateTime                        @default(now()) @db.Timestamp(0)
+  is_deleted                          String                          @default("N") @db.Char(1)
+  title                               String?                         @db.VarChar(50)
+  content_answer_sheet                content_answer_sheet[]
+  content_factory                     content_factory                 @relation(fields: [content_factory_no], references: [idx], onUpdate: Restrict, map: "content_test_teacher_content_factory_FK")
+  member                              member                          @relation(fields: [register], references: [idx], onUpdate: Restrict, map: "content_test_teacher_member_FK")
+  content_test_teacher_question       content_test_teacher_question?  @relation("content_test_teacher_questionTocontent_test_teacher_question", fields: [parent_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "content_test_teacher_question_self_FK")
+  other_content_test_teacher_question content_test_teacher_question[] @relation("content_test_teacher_questionTocontent_test_teacher_question")
+
+  @@index([content_factory_no], map: "content_test_teacher_content_factory_FK")
+  @@index([register], map: "content_test_teacher_member_FK")
+  @@index([parent_no], map: "content_test_teacher_question_self_FK")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_user_video {
+  campas_class_course_no  Int
+  campas_class_content_no Int
+  video_play_time         String?              @db.VarChar(50)
+  video_total_play_time   String?              @db.VarChar(50)
+  register                Int
+  register_date           DateTime             @default(now()) @db.Timestamp(0)
+  modify_date             DateTime?            @db.Timestamp(0)
+  campas_class_content    campas_class_content @relation(fields: [campas_class_content_no], references: [idx], onUpdate: Restrict, map: "content_user_video_campas_class_content_FK")
+
+  @@index([campas_class_content_no], map: "content_user_video_campas_class_content_FK")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_voca_my_question {
+  content_factory_no                               Int
+  unit_no                                          Int
+  question_no_list                                 String            @db.Text
+  register                                         Int
+  register_date                                    DateTime          @default(now()) @db.Timestamp(0)
+  modifier                                         Int?
+  modify_date                                      DateTime?         @db.Timestamp(0)
+  is_deleted                                       String            @default("N") @db.Char(1)
+  content_factory                                  content_factory   @relation(fields: [content_factory_no], references: [idx], onUpdate: Restrict, map: "content_voca_my_question_content_factory_FK")
+  content_voca_unit                                content_voca_unit @relation(fields: [unit_no], references: [idx], onUpdate: Restrict, map: "content_voca_my_question_content_voca_unit_FK")
+  member_content_voca_my_question_registerTomember member            @relation("content_voca_my_question_registerTomember", fields: [register], references: [idx], onUpdate: Restrict, map: "content_voca_my_question_member_FK")
+  member_content_voca_my_question_modifierTomember member?           @relation("content_voca_my_question_modifierTomember", fields: [modifier], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "content_voca_my_question_member_FK2")
+
+  @@index([content_factory_no], map: "content_voca_my_question_content_factory_FK")
+  @@index([unit_no], map: "content_voca_my_question_content_voca_unit_FK")
+  @@index([register], map: "content_voca_my_question_member_FK")
+  @@index([modifier], map: "content_voca_my_question_member_FK2")
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_voca_question {
+  idx                  Int                    @id @default(autoincrement())
+  code                 String                 @db.VarChar(20)
+  unit_no              Int
+  type                 Int
+  word_en              String                 @db.VarChar(100)
+  word_ko              String                 @db.VarChar(500)
+  example1_en          String?                @db.Text
+  example2_en          String?                @db.Text
+  example3_en          String?                @db.Text
+  example1_ko          String?                @db.Text
+  example2_ko          String?                @db.Text
+  example3_ko          String?                @db.Text
+  auto_file_name       String?                @db.VarChar(100)
+  register_date        DateTime               @default(now()) @db.Timestamp(0)
+  modify_date          DateTime?              @db.Timestamp(0)
+  is_deleted           String                 @default("N") @db.Char(1)
+  content_answer_sheet content_answer_sheet[]
+  content_voca_unit    content_voca_unit      @relation(fields: [unit_no], references: [idx], onUpdate: Restrict, map: "content_voca_question_content_voca_unit_FK")
+  member_wordbook      member_wordbook[]      @ignore
+
+  @@index([unit_no], map: "content_voca_question_content_voca_unit_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_voca_teacher_question {
+  idx                  Int                    @id @default(autoincrement())
+  content_factory_no   Int
+  word                 String                 @db.VarChar(60)
+  meaning              String?                @db.VarChar(100)
+  example_sentence     String?                @db.VarChar(120)
+  explain              String?                @db.VarChar(120)
+  order                Int                    @default(0)
+  register             Int
+  register_date        DateTime               @default(now()) @db.Timestamp(0)
+  is_deleted           String                 @default("N") @db.Char(1)
+  content_answer_sheet content_answer_sheet[]
+  member               member                 @relation(fields: [register], references: [idx], onUpdate: Restrict, map: "content_voca_teacher_member_FK")
+  content_factory      content_factory        @relation(fields: [content_factory_no], references: [idx], onUpdate: Restrict, map: "content_voca_teacher_question_content_factory_FK")
+  member_wordbook      member_wordbook[]      @ignore
+
+  @@index([register], map: "content_voca_teacher_member_FK")
+  @@index([content_factory_no], map: "content_voca_teacher_question_content_factory_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model content_voca_unit {
+  idx                      Int                        @id @default(autoincrement())
+  api_book_id              String                     @db.VarChar(200)
+  api_book_title           String?                    @db.VarChar(300)
+  api_area                 String?                    @db.VarChar(200)
+  unit_name                String                     @default("") @db.VarChar(200)
+  origin_name              String                     @db.VarChar(50)
+  title                    String                     @db.VarChar(200)
+  total_voca_count         Int                        @default(0)
+  register_date            DateTime                   @default(now()) @db.Timestamp(0)
+  modify_date              DateTime?                  @db.Timestamp(0)
+  is_deleted               String                     @default("N") @db.Char(1)
+  unit_id                  Int?
+  is_active                String                     @default("Y") @db.Char(1)
+  ord                      Int?                       @default(0)
+  content_voca_my_question content_voca_my_question[] @ignore
+  content_voca_question    content_voca_question[]
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model count {
+  count1 Int?
+  count2 Int?
+
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model coupon {
+  idx                   Int              @id @default(autoincrement())
+  type                  Int
+  code                  String?          @db.VarChar(20)
+  title                 String           @db.VarChar(80)
+  sale_type             Int
+  sale_value            Int
+  require_min_price     Int?
+  use_cedu_campas       Int              @default(1)
+  use_primium_class     Int              @default(1)
+  offline_regist_start  DateTime?        @db.Date
+  offline_regist_end    DateTime?        @db.Date
+  valid_start           DateTime?        @db.Date
+  valid_end             DateTime?        @db.Date
+  valid_publish         Int?
+  publish_limit         Int?
+  course_list           String?          @db.Text
+  product_list          String?          @db.Text
+  register_date         DateTime         @default(now()) @db.Timestamp(0)
+  modify_date           DateTime?        @db.Timestamp(0)
+  is_deleted            String           @default("N") @db.Char(1)
+  use_pv_teacher        Int
+  use_pv_student        Int
+  use_pvoca_class       Int?
+  pvoca_stdproduct_list String?          @db.Text
+  pvoca_product_list    String?          @db.Text
+  coupon_publish        coupon_publish[]
+}
+
+model coupon_pool {
+  idx           Int       @id @default(autoincrement())
+  code          String?   @db.VarChar(20)
+  coupon_no     Int?
+  is_deleted    String?   @default("N") @db.Char(1)
+  register_date DateTime  @default(now()) @db.DateTime(0)
+  modify_date   DateTime? @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model coupon_publish {
+  idx              Int       @id @default(autoincrement())
+  code             String    @db.VarChar(20)
+  coupon_no        Int
+  member_no        Int
+  is_publish       Int       @default(0)
+  is_use           Int       @default(0)
+  is_cancel        Int       @default(0)
+  is_priority_high Int       @default(0)
+  publish_date     DateTime? @db.Timestamp(0)
+  use_date         DateTime? @db.Timestamp(0)
+  cancel_date      DateTime? @db.Timestamp(0)
+  enroll_date      DateTime? @db.Timestamp(0)
+  is_deleted       String    @default("N") @db.Char(1)
+  coupon           coupon    @relation(fields: [coupon_no], references: [idx], onUpdate: Restrict, map: "coupon_publish_coupon_FK")
+  member           member    @relation(fields: [member_no], references: [idx], onUpdate: Restrict, map: "coupon_publish_member_FK")
+  order            order[]
+
+  @@index([coupon_no], map: "coupon_publish_coupon_FK")
+  @@index([member_no], map: "coupon_publish_member_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model faq {
+  idx            Int          @id @default(autoincrement())
+  category_no    Int
+  title          String       @db.VarChar(80)
+  content        String?      @db.Text
+  file_list      String?      @db.VarChar(130)
+  is_view_pc     Int          @default(1)
+  is_view_mobile Int          @default(1)
+  is_top10       Int          @default(0)
+  register_date  DateTime     @default(now()) @db.Timestamp(0)
+  modify_date    DateTime?    @db.Timestamp(0)
+  is_deleted     String       @default("N") @db.Char(1)
+  faq_category   faq_category @relation(fields: [category_no], references: [idx], onUpdate: Restrict, map: "faq_faq_category")
+
+  @@index([category_no], map: "faq_faq_category")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model faq_category {
+  idx           Int       @id @default(autoincrement())
+  title_ko      String    @db.VarChar(80)
+  title_en      String?   @db.VarChar(80)
+  register_date DateTime  @default(now()) @db.Timestamp(0)
+  modify_date   DateTime? @db.Timestamp(0)
+  is_deleted    String    @default("N") @db.Char(1)
+  faq           faq[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model file {
+  idx                               Int      @id @default(autoincrement())
+  original_name                     String   @db.VarChar(250)
+  save_name                         String   @db.VarChar(50)
+  path                              String   @db.VarChar(100)
+  size                              Int      @default(0)
+  extension                         String?  @db.VarChar(100)
+  register_date                     DateTime @default(now()) @db.Timestamp(0)
+  board                             board[]
+  campas_campas_mb_main_imageTofile campas[] @relation("campas_mb_main_imageTofile")
+  campas_campas_logo_noTofile       campas[] @relation("campas_logo_noTofile")
+}
+
+model history_campus {
+  idx               Int      @id @default(autoincrement())
+  date              String   @db.VarChar(20)
+  campas_no         Int
+  campas_name       String   @db.VarChar(50)
+  product_no        Int?
+  product_name      String?  @db.VarChar(50)
+  product_max_count Int?
+  master_no         Int
+  master_id         String   @db.VarChar(50)
+  master_name       String   @db.VarChar(50)
+  class_count       Int      @default(0)
+  student_count     Int      @default(0)
+  teacher_count     Int      @default(0)
+  register_date     DateTime @default(now()) @db.Timestamp(0)
+}
+
+model history_member {
+  idx           Int      @id @default(autoincrement())
+  date          String   @db.VarChar(20)
+  p_member      Int      @default(0)
+  f_member      Int      @default(0)
+  p_class       Int      @default(0)
+  f_class       Int      @default(0)
+  p_teacher     Int      @default(0)
+  f_teacher     Int      @default(0)
+  p_master      Int      @default(0)
+  f_master      Int      @default(0)
+  p_student     Int      @default(0)
+  f_student     Int      @default(0)
+  register_date DateTime @default(now()) @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model inactive_member {
+  idx           Int      @id
+  name          String?  @db.VarChar(255)
+  email         String?  @db.VarChar(255)
+  phone         String?  @db.VarChar(255)
+  parent_phone  String?  @db.VarChar(255)
+  register_date DateTime @default(now()) @db.Timestamp(0)
+  member        member   @relation(fields: [idx], references: [idx], onUpdate: Restrict, map: "inactive_member_member_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model inquiry {
+  idx               Int       @id @default(autoincrement())
+  type              Int
+  title             String    @db.VarChar(80)
+  content           String?   @db.Text
+  answer            String?   @db.Text
+  inquiry_file_list String?   @db.VarChar(130)
+  answer_file_list  String?   @db.VarChar(130)
+  register          Int
+  register_date     DateTime  @default(now()) @db.Timestamp(0)
+  answer_date       DateTime? @db.Timestamp(0)
+  is_deleted        String    @default("N") @db.Char(1)
+  member            member    @relation(fields: [register], references: [idx], onUpdate: Restrict, map: "inquiry_member_FK")
+
+  @@index([register], map: "inquiry_member_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model invite {
+  idx                                    Int       @id @default(autoincrement())
+  code                                   String?   @db.Char(45)
+  type                                   Int
+  invite_campas_no                       Int?
+  invite_class_no                        Int?
+  invite_status                          Int?
+  target_member_no                       Int?
+  register                               Int
+  register_date                          DateTime? @db.Timestamp(0)
+  response_date                          DateTime? @db.Timestamp(0)
+  expire_date                            DateTime? @db.Timestamp(0)
+  is_deleted                             String    @default("N") @db.Char(1)
+  member_invite_target_member_noTomember member?   @relation("invite_target_member_noTomember", fields: [target_member_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "invite_member_FK")
+  member_invite_registerTomember         member    @relation("invite_registerTomember", fields: [register], references: [idx], onUpdate: Restrict, map: "invite_member_FK2")
+  member_member_invite_noToinvite        member[]  @relation("member_invite_noToinvite")
+
+  @@index([target_member_no], map: "invite_member_FK")
+  @@index([register], map: "invite_member_FK2")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model member {
+  idx                                                                Int                             @id @default(autoincrement())
+  type                                                               Int                             @default(0)
+  profile_no                                                         Int?
+  id                                                                 String                          @db.VarChar(30)
+  password                                                           String?                         @db.VarChar(255)
+  name                                                               String                          @db.VarChar(20)
+  email                                                              String?                         @db.VarChar(100)
+  parent_phone                                                       String?                         @db.VarChar(14)
+  phone                                                              String?                         @db.VarChar(14)
+  birth                                                              String?                         @db.VarChar(10)
+  invite_no                                                          Int?
+  is_event                                                           Int                             @default(0)
+  is_email                                                           Int                             @default(0)
+  is_sms                                                             Int?                            @default(0)
+  noti_message                                                       Int                             @default(1)
+  noti_system                                                        Int                             @default(1)
+  noti_marketing                                                     Int                             @default(1)
+  is_auto_used_coupon                                                Int                             @default(1)
+  is_require_change_pw                                               Int                             @default(0)
+  device                                                             String?                         @db.Char(5)
+  token                                                              String?                         @db.VarChar(255)
+  refresh_token_pc                                                   String?                         @db.VarChar(255)
+  last_time_pc                                                       DateTime?                       @db.Timestamp(0)
+  refresh_token_mobile                                               String?                         @db.VarChar(255)
+  last_time_mobile                                                   DateTime?                       @db.Timestamp(0)
+  last_login                                                         DateTime?                       @db.Timestamp(0)
+  register_date                                                      DateTime                        @default(now()) @db.Timestamp(0)
+  modify_date                                                        DateTime?                       @db.Timestamp(0)
+  status                                                             String                          @default("Y") @db.Char(1)
+  inactive_date                                                      DateTime?                       @db.Timestamp(0)
+  withdraw_reason                                                    Int?
+  withdraw_input                                                     String?                         @db.VarChar(100)
+  withdraw_date                                                      DateTime?                       @db.Timestamp(0)
+  is_deleted                                                         String                          @default("N") @db.Char(1)
+  pw_change_date                                                     DateTime?                       @db.Timestamp(0)
+  alarm_alarm_senderTomember                                         alarm[]                         @relation("alarm_senderTomember")
+  alarm_alarm_receiverTomember                                       alarm[]                         @relation("alarm_receiverTomember")
+  board_board_registerTomember                                       board[]                         @relation("board_registerTomember")
+  board_board_modifierTomember                                       board[]                         @relation("board_modifierTomember")
+  campas                                                             campas[]
+  campas_class_campas_class_teacher_noTomember                       campas_class[]                  @relation("campas_class_teacher_noTomember")
+  campas_class_campas_class_registerTomember                         campas_class[]                  @relation("campas_class_registerTomember")
+  campas_class_badge                                                 campas_class_badge[]            @ignore
+  campas_class_course_bookmark                                       campas_class_course_bookmark[]
+  campas_class_notice                                                campas_class_notice[]
+  campas_class_notice_member                                         campas_class_notice_member[]
+  campas_class_student                                               campas_class_student[]
+  campas_disposition_campas_disposition_prev_member_noTomember       campas_disposition[]            @relation("campas_disposition_prev_member_noTomember")
+  campas_disposition_campas_disposition_change_member_noTomember     campas_disposition[]            @relation("campas_disposition_change_member_noTomember")
+  campas_member                                                      campas_member[]
+  campas_subscrip                                                    campas_subscrip[]
+  chat_chat_senderTomember                                           chat[]                          @relation("chat_senderTomember")
+  chat_chat_receiverTomember                                         chat[]                          @relation("chat_receiverTomember")
+  chat_attend                                                        chat_attend[]                   @ignore
+  content_answer_sheet                                               content_answer_sheet[]
+  content_bookmark                                                   content_bookmark[]              @ignore
+  content_course_content_course_registerTomember                     content_course[]                @relation("content_course_registerTomember")
+  content_course_content_course_modifierTomember                     content_course[]                @relation("content_course_modifierTomember")
+  content_course_data                                                content_course_data[]           @ignore
+  content_factory_content_factory_registerTomember                   content_factory[]               @relation("content_factory_registerTomember")
+  content_factory_content_factory_modifierTomember                   content_factory[]               @relation("content_factory_modifierTomember")
+  content_factory_question                                           content_factory_question[]
+  content_folder                                                     content_folder[]
+  content_test                                                       content_test[]
+  content_test_print_history                                         content_test_print_history[]    @ignore
+  content_test_teacher_question                                      content_test_teacher_question[]
+  content_voca_my_question_content_voca_my_question_registerTomember content_voca_my_question[]      @relation("content_voca_my_question_registerTomember") @ignore
+  content_voca_my_question_content_voca_my_question_modifierTomember content_voca_my_question[]      @relation("content_voca_my_question_modifierTomember") @ignore
+  content_voca_teacher_question                                      content_voca_teacher_question[]
+  coupon_publish                                                     coupon_publish[]
+  inactive_member                                                    inactive_member?
+  inquiry                                                            inquiry[]
+  invite_invite_target_member_noTomember                             invite[]                        @relation("invite_target_member_noTomember")
+  invite_invite_registerTomember                                     invite[]                        @relation("invite_registerTomember")
+  invite_member_invite_noToinvite                                    invite?                         @relation("member_invite_noToinvite", fields: [invite_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "member_invite_FK")
+  member_card                                                        member_card[]
+  member_comment                                                     member_comment[]
+  member_like_campus                                                 member_like_campus[]            @ignore
+  member_wordbook                                                    member_wordbook[]               @ignore
+  order                                                              order[]
+  report                                                             report[]
+  student_test_score_history                                         student_test_score_history[]
+  system_alarm_menual_member                                         system_alarm_menual_member[]
+  teacher_comment_teacher_comment_registerTomember                   teacher_comment[]               @relation("teacher_comment_registerTomember")
+  teacher_comment_teacher_comment_student_noTomember                 teacher_comment[]               @relation("teacher_comment_student_noTomember")
+
+  @@index([invite_no], map: "member_invite_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model member_card {
+  idx           Int       @id @default(autoincrement())
+  member_no     Int
+  card_name     String    @db.VarChar(50)
+  card_no       String    @db.VarChar(50)
+  customer_uid  String    @db.VarChar(50)
+  tid           String    @db.VarChar(100)
+  merchant_uid  String    @db.VarChar(80)
+  is_main       Int       @default(0)
+  register_date DateTime  @default(now()) @db.Timestamp(0)
+  remove_date   DateTime? @db.Timestamp(0)
+  is_deleted    String    @default("N") @db.Char(1)
+  member        member    @relation(fields: [member_no], references: [idx], onUpdate: Restrict, map: "member_card_member_FK")
+
+  @@index([member_no], map: "member_card_member_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model member_comment {
+  idx           Int       @id @default(autoincrement())
+  member_no     Int
+  text          String    @db.VarChar(150)
+  register_date DateTime  @default(now()) @db.Timestamp(0)
+  modify_date   DateTime? @db.Timestamp(0)
+  is_deleted    String    @default("N") @db.Char(1)
+  member        member    @relation(fields: [member_no], references: [idx], onUpdate: Restrict, map: "member_comment_member_FK")
+
+  @@index([member_no], map: "member_comment_member_FK")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model member_like_campus {
+  member_no     Int
+  campas_no     Int
+  register_date DateTime @default(now()) @db.Timestamp(0)
+  member        member   @relation(fields: [member_no], references: [idx], onUpdate: Restrict, map: "member_like_campus_member_FK")
+
+  @@index([member_no], map: "member_like_campus_member_FK")
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model member_pwordbook {
+  member_no              Int
+  learn_cnt              Int
+  course_no              Int
+  pvoca_no               Int?
+  pm_id                  Int
+  high_level             Int?
+  register_date          DateTime  @default(now()) @db.Timestamp(0)
+  is_deleted             String    @default("N") @db.Char(1)
+  is_memorized           String    @default("N") @db.Char(1)
+  low_level              Int?
+  modify_date            DateTime? @db.Timestamp(0)
+  campas_class_course_no Int
+
+  @@id([member_no, campas_class_course_no, pm_id])
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model member_pwordbook_copy {
+  member_no              Int
+  learn_cnt              Int
+  course_no              Int
+  pvoca_no               Int?
+  pm_id                  Int
+  high_level             Int?
+  register_date          DateTime  @default(now()) @db.Timestamp(0)
+  is_deleted             String    @default("N") @db.Char(1)
+  is_memorized           String    @default("N") @db.Char(1)
+  low_level              Int?
+  modify_date            DateTime? @db.Timestamp(0)
+  campas_class_course_no Int?
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model member_pwordbook_play {
+  member_no           Int
+  pm_id_list          String   @db.VarChar(2000)
+  pvoca_type          String   @db.VarChar(100)
+  total_count         Int
+  total_correct_count Int      @default(0)
+  regitser_date       DateTime @default(now()) @db.Timestamp(0)
+  pvoca_q_list        String?  @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model member_visit_timeline {
+  date  String? @unique(map: "date") @db.VarChar(13)
+  year  String  @db.VarChar(4)
+  month String  @db.VarChar(2)
+  day   String  @db.VarChar(2)
+  time  String  @db.VarChar(50)
+  count Int?    @default(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model member_wordbook {
+  member_no                     Int
+  cedu_voca_no                  Int?
+  teacher_voca_no               Int?
+  register_date                 DateTime                       @default(now()) @db.Timestamp(0)
+  is_deleted                    String                         @default("N") @db.Char(1)
+  content_voca_question         content_voca_question?         @relation(fields: [cedu_voca_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "member_content_voca_question_FK")
+  content_voca_teacher_question content_voca_teacher_question? @relation(fields: [teacher_voca_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "member_content_voca_teacher_question_FK")
+  member                        member                         @relation(fields: [member_no], references: [idx], onUpdate: Restrict, map: "member_wordbook_member_FK")
+
+  @@index([cedu_voca_no], map: "member_content_voca_question_FK")
+  @@index([teacher_voca_no], map: "member_content_voca_teacher_question_FK")
+  @@index([member_no], map: "member_wordbook_member_FK")
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model mp3_qr {
+  idx         Int     @id @default(autoincrement())
+  book_id     BigInt?
+  book_title  String? @db.VarChar(100)
+  question_no Int?
+  mp3_text    String? @db.Text
+  qr          String? @db.VarChar(100)
+  unit        String? @db.VarChar(100)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model order {
+  idx                      Int               @id @default(autoincrement())
+  type                     Int               @default(0)
+  is_master_order          Int?
+  product_no               Int
+  product_code             String            @db.VarChar(30)
+  original_price           Int
+  sale_price               Int               @default(0)
+  coupon_publish_no        Int?
+  coupon_sale_type         Int?
+  coupon_sale_value        Int?
+  coupon_price             Int               @default(0)
+  price                    Int
+  pay                      Int               @default(0)
+  balance                  Int
+  preview_refund_price     Int?
+  refund_price             Int?
+  order                    Int
+  register_date            DateTime          @default(now()) @db.Timestamp(0)
+  status                   Int
+  fail_reason              String?           @db.VarChar(300)
+  recurring_fail_campus_no Int?
+  recurring_fail_card_no   Int?
+  refund_fail_reason       String?           @db.VarChar(300)
+  admin_memo               String?           @db.VarChar(500)
+  payment_date             DateTime?         @db.Timestamp(0)
+  refund_type              Int?
+  request_refund_date      DateTime?         @db.Timestamp(0)
+  response_refund_date     DateTime?         @db.Timestamp(0)
+  is_deleted               String            @default("N") @db.Char(1)
+  product_pr_term          Int?
+  expire_date              DateTime?         @db.DateTime(0)
+  campas_subscrip          campas_subscrip[]
+  coupon_publish           coupon_publish?   @relation(fields: [coupon_publish_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "order_coupon_publish_FK")
+  member                   member            @relation(fields: [order], references: [idx], onUpdate: Restrict, map: "order_member_FK")
+  product                  product           @relation(fields: [product_no], references: [idx], onUpdate: Restrict, map: "order_product_FK")
+  payment                  payment[]
+
+  @@index([coupon_publish_no], map: "order_coupon_publish_FK")
+  @@index([order], map: "order_member_FK")
+  @@index([product_no], map: "order_product_FK")
+  @@index([product_code], map: "order_product_FK2")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model payment {
+  idx                 Int       @id @default(autoincrement())
+  order_no            Int
+  type                Int
+  tid                 String?   @db.VarChar(100)
+  cancel_tid          String?   @db.VarChar(100)
+  imp_uid             String?   @db.VarChar(100)
+  merchant_uid        String?   @db.VarChar(80)
+  card_name           String?   @db.VarChar(50)
+  card_no             String?   @db.VarChar(50)
+  card_quota          Int?
+  trans_bank_name     String?   @db.VarChar(50)
+  price               Int
+  payment             Int
+  iamport_status      String    @db.VarChar(20)
+  iamport_receipt_url String?   @db.VarChar(255)
+  paid_at             String?   @db.VarChar(20)
+  payment_date        DateTime? @default(now()) @db.Timestamp(0)
+  order               order     @relation(fields: [order_no], references: [idx], onDelete: Cascade, onUpdate: Restrict, map: "payment_FK")
+
+  @@index([order_no], map: "payment_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model payment_module_data {
+  idx           Int      @id @default(autoincrement())
+  member_no     Int
+  member_type   Int      @default(0)
+  payment_type  String   @db.VarChar(50)
+  merchant_uid  String   @db.VarChar(80)
+  customer_uid  String   @db.VarChar(50)
+  pg_tid        String?  @db.VarChar(100)
+  imp_uid       String?  @db.VarChar(100)
+  status        String   @default("ready") @db.VarChar(50)
+  paid_at       String?  @db.VarChar(20)
+  buyer_email   String   @db.VarChar(100)
+  buyer_name    String   @db.VarChar(100)
+  is_deleted    String   @default("N") @db.Char(1)
+  register_date DateTime @default(now()) @db.Timestamp(0)
+  type          Int      @default(0)
+  product_no    Int?
+  coupon_no     Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model product {
+  idx                                               Int              @id @default(autoincrement())
+  code                                              String           @unique(map: "code") @db.VarChar(30)
+  type                                              Int
+  title                                             String           @db.VarChar(80)
+  sub_title                                         String?          @db.VarChar(100)
+  plan_min_count                                    Int?
+  plan_max_count                                    Int?
+  pr_program_name                                   String?          @db.VarChar(80)
+  pr_content                                        String?          @db.Text
+  pr_level                                          Int?
+  pr_order                                          Int?
+  pr_original_price                                 Int?
+  pr_sale_type                                      Int?
+  pr_sale_value                                     Int?
+  pr_study_start                                    DateTime?        @db.Date
+  pr_study_end                                      DateTime?        @db.Date
+  pr_apply_start                                    DateTime?        @db.Date
+  pr_apply_end                                      DateTime?        @db.Date
+  pr_top10_view                                     Int?             @default(1)
+  is_view                                           Int              @default(0)
+  register_date                                     DateTime         @default(now()) @db.Timestamp(0)
+  modify_date                                       DateTime?        @db.Timestamp(0)
+  is_deleted                                        String?          @default("N") @db.Char(1)
+  thumbnail_no                                      Int?
+  pr_term                                           Int?
+  pr_keyword                                        String?          @db.VarChar(50)
+  pr_sample_content                                 String?          @db.VarChar(80)
+  pr_area_voca                                      Int?
+  pr_area_phrase                                    Int?
+  pr_area_solving                                   Int?
+  pr_label_best                                     Int?
+  pr_label_event                                    Int?
+  pr_sub_order                                      Int?
+  pr_youtube_url                                    String?          @db.VarChar(200)
+  pr_extend_price                                   Int?
+  link                                              String?          @db.Text
+  campas_class                                      campas_class[]
+  order                                             order[]
+  product_course_product_course_product_noToproduct product_course[] @relation("product_course_product_noToproduct") @ignore
+  product_course_product_course_product_idToproduct product_course[] @relation("product_course_product_idToproduct") @ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model product_course {
+  product_no                                 Int
+  product_id                                 String         @db.VarChar(30)
+  course_no                                  Int
+  register_date                              DateTime       @default(now()) @db.Timestamp(0)
+  delete_date                                DateTime?      @db.Timestamp(0)
+  is_deleted                                 String         @default("N") @db.Char(1)
+  content_course                             content_course @relation(fields: [course_no], references: [idx], onUpdate: Restrict, map: "product_course_content_course_FK")
+  product_product_course_product_noToproduct product        @relation("product_course_product_noToproduct", fields: [product_no], references: [idx], onUpdate: Restrict, map: "product_course_product_FK")
+  product_product_course_product_idToproduct product        @relation("product_course_product_idToproduct", fields: [product_id], references: [code], onUpdate: Restrict, map: "product_course_product_FK2")
+
+  @@index([course_no], map: "product_course_content_course_FK")
+  @@index([product_no], map: "product_course_product_FK")
+  @@index([product_id], map: "product_course_product_FK2")
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pt_admin {
+  idx        Int       @id @default(autoincrement())
+  admin_id   String    @db.VarChar(50)
+  admin_pass String    @db.VarChar(512)
+  admin_role Int
+  created_at DateTime? @db.DateTime(0)
+  created_by Int?
+  name       String?   @default("") @db.VarChar(255)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pt_book {
+  idx                                            Int          @id @default(autoincrement())
+  book_title                                     String?      @db.Text
+  book_isbn                                      String?      @db.VarChar(50)
+  book_imagelink                                 String?      @db.VarChar(500)
+  cate_lvl1_idx                                  Int?
+  cate_lvl2_idx                                  Int?
+  created_at                                     DateTime?    @db.DateTime(0)
+  created_by                                     Int?
+  key                                            String?      @default("") @db.VarChar(255)
+  original_name                                  String?      @default("") @db.VarChar(255)
+  pt_category_pt_book_cate_lvl1_idxTopt_category pt_category? @relation("pt_book_cate_lvl1_idxTopt_category", fields: [cate_lvl1_idx], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "fk_pt_book_1")
+  pt_category_pt_book_cate_lvl2_idxTopt_category pt_category? @relation("pt_book_cate_lvl2_idxTopt_category", fields: [cate_lvl2_idx], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "fk_pt_book_2")
+  pt_chapter                                     pt_chapter[]
+  pt_my_book                                     pt_my_book[]
+  pt_unit                                        pt_unit[]
+  pt_voca                                        pt_voca[]
+
+  @@index([cate_lvl1_idx], map: "fk_pt_book_1")
+  @@index([cate_lvl2_idx], map: "fk_pt_book_2")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pt_category {
+  idx                                        Int       @id @default(autoincrement())
+  cate_name                                  String    @db.VarChar(50)
+  cate_lvl                                   Int
+  cate_pidx                                  Int?
+  created_at                                 DateTime? @db.DateTime(0)
+  created_by                                 Int?
+  pt_book_pt_book_cate_lvl1_idxTopt_category pt_book[] @relation("pt_book_cate_lvl1_idxTopt_category")
+  pt_book_pt_book_cate_lvl2_idxTopt_category pt_book[] @relation("pt_book_cate_lvl2_idxTopt_category")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pt_ch_un_mapping {
+  idx        Int        @id @default(autoincrement())
+  ch_idx     Int
+  un_idx     Int
+  created_at DateTime?  @db.DateTime(0)
+  created_by Int?
+  pt_chapter pt_chapter @relation(fields: [ch_idx], references: [idx], onUpdate: Restrict, map: "fk_pt_ch_un_mapping_1")
+  pt_unit    pt_unit    @relation(fields: [un_idx], references: [idx], onUpdate: Restrict, map: "fk_pt_ch_un_mapping_2")
+
+  @@index([ch_idx], map: "fk_pt_ch_un_mapping_1")
+  @@index([un_idx], map: "fk_pt_ch_un_mapping_2")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pt_chapter {
+  idx              Int                @id @default(autoincrement())
+  ch_title         String             @db.VarChar(50)
+  ch_order         Int
+  book_idx         Int
+  created_at       DateTime?          @db.DateTime(0)
+  created_by       Int?
+  pt_ch_un_mapping pt_ch_un_mapping[]
+  pt_book          pt_book            @relation(fields: [book_idx], references: [idx], onUpdate: Restrict, map: "fk_pt_chapter")
+
+  @@index([book_idx], map: "fk_pt_chapter")
+}
+
+model pt_exam {
+  idx            Int           @id @default(autoincrement())
+  user_idx       Int
+  academy_name   String?       @db.VarChar(255)
+  exam_name      String?       @db.VarChar(255)
+  logoUrl        String?       @db.VarChar(255)
+  class_name     String?       @db.VarChar(255)
+  teacher_name   String?       @db.VarChar(255)
+  book_idx       Int?
+  unit_ids       String?       @db.LongText
+  unit_names     String?       @db.LongText
+  question_count Int?
+  questions      String?       @db.LongText
+  created_at     DateTime      @db.DateTime(0)
+  updated_at     DateTime      @db.DateTime(0)
+  logo_idx       Int?
+  mp3_idx        Int?
+  pt_exam_logo   pt_exam_logo? @relation(fields: [logo_idx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "pt_exam_logo_idx_fk")
+  pt_exam_mp3    pt_exam_mp3?  @relation(fields: [mp3_idx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "pt_exam_mp3_idx_fk")
+
+  @@index([logo_idx], map: "pt_exam_logo_idx_fk")
+  @@index([mp3_idx], map: "pt_exam_mp3_idx_fk")
+}
+
+model pt_exam_logo {
+  idx       Int       @id @default(autoincrement())
+  location  String?   @db.Text
+  updatedAt DateTime  @db.DateTime(0)
+  key       String?   @db.VarChar(255)
+  pt_exam   pt_exam[]
+}
+
+model pt_exam_mp3 {
+  idx       Int       @id @default(autoincrement())
+  location  String?   @db.Text
+  updatedAt DateTime  @db.DateTime(0)
+  key       String?   @db.VarChar(255)
+  pt_exam   pt_exam[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pt_meaning_example {
+  idx             Int             @id @default(autoincrement())
+  ex_sentence     String?         @db.Text
+  ex_translation  String?         @db.Text
+  meaning_idx     Int
+  voca_idx        Int
+  created_at      DateTime?       @db.DateTime(0)
+  created_by      Int?
+  pt_voca         pt_voca         @relation(fields: [voca_idx], references: [idx], onUpdate: Restrict, map: "fk_pt_pt_meaning_example")
+  pt_voca_meaning pt_voca_meaning @relation(fields: [meaning_idx], references: [idx], onUpdate: Restrict, map: "fk_pt_pt_meaning_example_2")
+
+  @@index([voca_idx], map: "fk_pt_pt_meaning_example")
+  @@index([meaning_idx], map: "fk_pt_pt_meaning_example_2")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pt_meaning_snyant {
+  idx             Int             @id @default(autoincrement())
+  snyant_type     Int
+  snyant_word     String?         @default("") @db.VarChar(500)
+  meaning_idx     Int
+  voca_idx        Int
+  created_at      DateTime?       @db.DateTime(0)
+  created_by      Int?
+  snyant_meaning  String?         @db.Text
+  pt_voca         pt_voca         @relation(fields: [voca_idx], references: [idx], onUpdate: Restrict, map: "fk_pt_meaning_snyant_2")
+  pt_voca_meaning pt_voca_meaning @relation(fields: [meaning_idx], references: [idx], onUpdate: Restrict, map: "fk_pt_pt_meaning_snyant")
+
+  @@index([voca_idx], map: "fk_pt_meaning_snyant_2")
+  @@index([meaning_idx], map: "fk_pt_pt_meaning_snyant")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pt_my_book {
+  idx         Int           @id @default(autoincrement())
+  user_idx    Int
+  user_role   Int
+  book_idx    Int
+  mb_order    Int
+  mb_favor    Int           @default(0)
+  created_at  DateTime?     @db.DateTime(0)
+  created_by  Int?
+  pt_book     pt_book       @relation(fields: [book_idx], references: [idx], onUpdate: Restrict, map: "fk_pt_my_book")
+  pt_users    pt_users      @relation(fields: [user_idx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "pt_my_book_user_idx_fk")
+  pt_my_paper pt_my_paper[]
+
+  @@index([book_idx], map: "fk_pt_my_book")
+  @@index([user_idx], map: "pt_my_book_user_idx_fk")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pt_my_paper {
+  idx             Int               @id @default(autoincrement())
+  mb_idx          Int
+  mp_order        Int
+  mp_iname        String?           @db.VarChar(50)
+  mp_ilogolink    String?           @db.VarChar(500)
+  mp_tname        String?           @db.VarChar(50)
+  mp_cname        String?           @db.VarChar(50)
+  mp_layout       Int?
+  mp_fontsize     Int?
+  mp_lineheight   Int?
+  mp_qdisplay     Int?
+  mp_hasfletter   Int?
+  mp_hastrans     Int?
+  mp_qtypes       String?           @db.VarChar(100)
+  mp_a_cnt        Int?
+  mp_b_cnt        Int?
+  mp_c_cnt        Int?
+  mp_d_cnt        Int?
+  mp_e_cnt        Int?
+  mp_f_cnt        Int?
+  mp_g_cnt        Int?
+  mp_h_cnt        Int?
+  mp_i_cnt        Int?
+  mp_j_cnt        Int?
+  mp_k_cnt        Int?
+  mp_l_cnt        Int?
+  mp_m_cnt        Int?
+  mp_mp3_type     Int?
+  mp_mp3_ptime    Int?
+  created_at      DateTime?         @db.DateTime(0)
+  created_by      Int?
+  pt_my_book      pt_my_book        @relation(fields: [mb_idx], references: [idx], onUpdate: Restrict, map: "fk_pt_my_paper")
+  pt_mypaper_item pt_mypaper_item[]
+
+  @@index([mb_idx], map: "fk_pt_my_paper")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pt_my_types {
+  idx        Int       @id @default(autoincrement())
+  user_idx   String    @db.VarChar(50)
+  types_a    Int?
+  types_b    Int?
+  types_c    Int?
+  types_d    Int?
+  types_e    Int?
+  types_f    Int?
+  types_g    Int?
+  types_h    Int?
+  types_i    Int?
+  types_j    Int?
+  types_k    Int?
+  types_l    Int?
+  types_m    Int?
+  created_at DateTime? @db.DateTime(0)
+  created_by Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pt_mypaper_item {
+  idx           Int         @id @default(autoincrement())
+  mypaper_idx   Int
+  item_type     String      @db.Char(1)
+  item_order    Int
+  un_idx        Int
+  voca_idx      Int
+  item_buffer1  String?     @db.VarChar(200)
+  item_buffer2  String?     @db.VarChar(200)
+  item_buffer3  String?     @db.VarChar(200)
+  item_buffer4  String?     @db.VarChar(200)
+  item_buffer5  String?     @db.VarChar(200)
+  item_buffer6  String?     @db.VarChar(200)
+  item_buffer7  String?     @db.VarChar(200)
+  item_buffer8  String?     @db.VarChar(200)
+  item_buffer9  String?     @db.VarChar(200)
+  item_buffer10 String?     @db.VarChar(200)
+  created_at    DateTime?   @db.DateTime(0)
+  created_by    Int?
+  pt_my_paper   pt_my_paper @relation(fields: [mypaper_idx], references: [idx], onUpdate: Restrict, map: "fk_pt_mypaper_item")
+
+  @@index([mypaper_idx], map: "fk_pt_mypaper_item")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pt_problem_type {
+  idx                     Int                       @id @default(autoincrement())
+  type                    String?                   @db.VarChar(255)
+  name                    String?                   @db.VarChar(255)
+  created_at              DateTime                  @db.DateTime(0)
+  updated_at              DateTime                  @db.DateTime(0)
+  pt_voca_problem_mapping pt_voca_problem_mapping[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pt_unit {
+  idx              Int                @id @default(autoincrement())
+  un_title         String?            @db.Text
+  un_order         Int
+  book_idx         Int
+  created_at       DateTime?          @db.DateTime(0)
+  created_by       Int?
+  un_short         String?            @default("") @db.VarChar(100)
+  pt_ch_un_mapping pt_ch_un_mapping[]
+  pt_book          pt_book            @relation(fields: [book_idx], references: [idx], onUpdate: Restrict, map: "fk_pt_unit")
+  pt_voca          pt_voca[]
+
+  @@index([book_idx], map: "fk_pt_unit")
+}
+
+model pt_users {
+  idx        Int          @id @default(autoincrement())
+  user_id    String?      @db.VarChar(255)
+  user_name  String?      @db.VarChar(255)
+  user_grade Int?
+  created_at DateTime     @db.DateTime(0)
+  updated_at DateTime     @db.DateTime(0)
+  pt_my_book pt_my_book[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pt_voca {
+  idx                     Int                       @id @default(autoincrement())
+  vc_word                 String?                   @default("") @db.VarChar(500)
+  vt_idx                  Int
+  vc_type                 Int
+  vc_root                 String?                   @db.Text
+  vc_unikey               String?                   @db.Text
+  vc_mp3_link             String?                   @db.VarChar(500)
+  un_idx                  Int
+  book_idx                Int
+  created_at              DateTime?                 @db.DateTime(0)
+  created_by              Int?
+  mp3_idx                 Int?
+  vc_order                Int?                      @default(0)
+  pt_meaning_example      pt_meaning_example[]
+  pt_meaning_snyant       pt_meaning_snyant[]
+  pt_voca_type            pt_voca_type              @relation(fields: [vt_idx], references: [idx], onUpdate: Restrict, map: "fk_pt_voca")
+  pt_unit                 pt_unit                   @relation(fields: [un_idx], references: [idx], onUpdate: Restrict, map: "fk_pt_voca_2")
+  pt_book                 pt_book                   @relation(fields: [book_idx], references: [idx], onUpdate: Restrict, map: "fk_pt_voca_3")
+  pt_voca_mp3             pt_voca_mp3?              @relation(fields: [mp3_idx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "pt_voca_mp3_idx_fk")
+  pt_voca_dr              pt_voca_dr[]
+  pt_voca_meaning         pt_voca_meaning[]
+  pt_voca_problem_mapping pt_voca_problem_mapping[]
+
+  @@index([vt_idx], map: "fk_pt_voca")
+  @@index([un_idx], map: "fk_pt_voca_2")
+  @@index([book_idx], map: "fk_pt_voca_3")
+  @@index([mp3_idx], map: "pt_voca_mp3_idx_fk")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pt_voca_dr {
+  idx        Int       @id @default(autoincrement())
+  dr_word    String?   @default("") @db.VarChar(500)
+  dr_meaning String?   @db.Text
+  voca_idx   Int
+  created_at DateTime? @db.DateTime(0)
+  created_by Int?
+  pt_voca    pt_voca   @relation(fields: [voca_idx], references: [idx], onUpdate: Restrict, map: "fk_pt_voca_dr")
+
+  @@index([voca_idx], map: "fk_pt_voca_dr")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pt_voca_meaning {
+  idx                Int                  @id @default(autoincrement())
+  mi_meaning         String?              @db.Text
+  mi_engmeaning      String?              @db.Text
+  mi_order           Int
+  voca_idx           Int
+  created_at         DateTime?            @db.DateTime(0)
+  created_by         Int?
+  pt_meaning_example pt_meaning_example[]
+  pt_meaning_snyant  pt_meaning_snyant[]
+  pt_voca            pt_voca              @relation(fields: [voca_idx], references: [idx], onUpdate: Restrict, map: "fk_pt_voca_meaning")
+
+  @@index([voca_idx], map: "fk_pt_voca_meaning")
+}
+
+model pt_voca_mp3 {
+  idx          Int       @id @default(autoincrement())
+  key          String?   @db.VarChar(255)
+  location     String?   @db.VarChar(255)
+  originalName String?   @db.VarChar(255)
+  updatedAt    DateTime  @db.DateTime(0)
+  pt_voca      pt_voca[]
+}
+
+model pt_voca_problem_mapping {
+  idx              Int              @id @default(autoincrement())
+  voca_idx         Int?
+  problem_type_idx Int?
+  created_at       DateTime         @db.DateTime(0)
+  updated_at       DateTime         @db.DateTime(0)
+  pt_voca          pt_voca?         @relation(fields: [voca_idx], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "pt_voca_problem_mapping_ibfk_1")
+  pt_problem_type  pt_problem_type? @relation(fields: [problem_type_idx], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "pt_voca_problem_mapping_ibfk_2")
+
+  @@index([problem_type_idx], map: "problem_type_idx")
+  @@index([voca_idx], map: "voca_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pt_voca_type {
+  idx        Int       @id @default(autoincrement())
+  vt_title   String?   @db.Text
+  created_at DateTime? @db.DateTime(0)
+  created_by Int?
+  pt_voca    pt_voca[]
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pvoca_btn_course {
+  course_no     Int
+  button_no     Int
+  order         Int?
+  type          Int?      @default(0)
+  register_date DateTime  @default(now()) @db.Timestamp(0)
+  delete_date   DateTime? @db.Timestamp(0)
+  is_deleted    String    @default("N") @db.Char(1)
+
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pvoca_button {
+  idx           Int       @id @default(autoincrement())
+  title         String?   @db.VarChar(100)
+  is_view       Int?
+  order         Int?
+  register      Int
+  register_date DateTime  @default(now()) @db.Timestamp(0)
+  modify_date   DateTime? @db.Timestamp(0)
+  is_deleted    String    @default("N") @db.Char(1)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pvoca_course_std_mode {
+  idx             Int  @id @default(autoincrement())
+  member_no       Int
+  course_no       Int
+  has_tr_mem_10   Int?
+  has_tr_mem_20   Int?
+  has_tr_mem_30   Int?
+  has_tr_mem_40   Int?
+  has_tr_mem_50   Int?
+  has_tr_que_10   Int?
+  has_tr_que_20   Int?
+  has_tr_que_30   Int?
+  has_tr_que_40   Int?
+  has_tr_que_45   Int?
+  has_tr_que_50   Int?
+  has_tr_que_60   Int?
+  has_tr_que_70   Int?
+  has_test_que_10 Int?
+  has_test_que_20 Int?
+  has_test_que_30 Int?
+  has_test_que_40 Int?
+  has_test_que_45 Int?
+  has_test_que_50 Int?
+  has_test_que_60 Int?
+  has_test_que_70 Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pvoca_unlisted_word {
+  idx           Int       @id @default(autoincrement())
+  word          String    @unique(map: "pvoca_unlisted_word_unique") @db.VarChar(100)
+  fail_count    Int       @default(1)
+  status        Int       @default(0)
+  memo          String?   @db.VarChar(200)
+  register_date DateTime  @default(now()) @db.Timestamp(0)
+  modify_date   DateTime? @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pvoca_userimage_sheet {
+  idx                    Int       @id @default(autoincrement())
+  campus_class_course_no Int?
+  content_factory_no     Int?
+  pm_id                  Int?
+  member_no              Int?
+  image_id               Int?
+  register_date          DateTime? @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model report {
+  idx                Int             @id @default(autoincrement())
+  course_no          Int?
+  content_factory_no Int
+  question_type      Int
+  publish_point      String?         @db.VarChar(100)
+  q_code             String?         @db.VarChar(45)
+  content            String?         @db.VarChar(300)
+  admin_memo         String?         @db.VarChar(100)
+  file_list          String?         @db.VarChar(80)
+  status             String          @db.Char(1)
+  register           Int
+  register_date      DateTime        @default(now()) @db.Timestamp(0)
+  modify_date        DateTime?       @db.Timestamp(0)
+  is_deleted         String          @default("N") @db.Char(1)
+  question_data      String?         @db.VarChar(300)
+  content_course     content_course? @relation(fields: [course_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "report_content_course_FK")
+  content_factory    content_factory @relation(fields: [content_factory_no], references: [idx], onUpdate: Restrict, map: "report_content_factory_FK")
+  member             member          @relation(fields: [register], references: [idx], onUpdate: Restrict, map: "report_member_FK")
+
+  @@index([course_no], map: "report_content_course_FK")
+  @@index([content_factory_no], map: "report_content_factory_FK")
+  @@index([register], map: "report_member_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model student_test_score_history {
+  idx                     Int                  @id @default(autoincrement())
+  content_test_no         Int
+  campas_class_course_no  Int
+  campas_class_content_no Int
+  student_no              Int
+  score                   Int
+  date                    DateTime?            @db.Timestamp(0)
+  exam_time               Int                  @default(0)
+  is_retry                Int                  @default(0)
+  is_deleted              String               @default("N") @db.Char(1)
+  campas_class_content    campas_class_content @relation(fields: [campas_class_content_no], references: [idx], onUpdate: Restrict, map: "student_test_score_history_campas_class_content_FK")
+  campas_class_course     campas_class_course  @relation(fields: [campas_class_course_no], references: [idx], onUpdate: Restrict, map: "student_test_score_history_campas_class_course_FK")
+  content_test            content_test         @relation(fields: [content_test_no], references: [idx], onUpdate: Restrict, map: "student_test_score_history_content_test_FK")
+  member                  member               @relation(fields: [student_no], references: [idx], onUpdate: Restrict, map: "student_test_score_history_student_FK")
+
+  @@index([campas_class_content_no], map: "campas_class_content_no")
+  @@index([campas_class_course_no], map: "campas_class_course_no")
+  @@index([content_test_no], map: "content_test_no")
+  @@index([student_no], map: "student_no")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model system_alarm {
+  idx                   Int                   @id @default(autoincrement())
+  category_no           Int
+  title                 String?               @db.VarChar(30)
+  member_type           Int                   @default(0)
+  send_type             Int                   @default(0)
+  email_content         String?               @db.Text
+  CTP_content           String?               @db.Text
+  values                String?               @db.VarChar(200)
+  register_date         DateTime              @default(now()) @db.Timestamp(0)
+  modify_date           DateTime?             @db.Timestamp(0)
+  is_deleted            String                @default("N") @db.Char(1)
+  system_alarm_category system_alarm_category @relation(fields: [category_no], references: [idx], onUpdate: Restrict, map: "system_alarm_system_alarm_category_FK")
+
+  @@index([category_no], map: "system_alarm_system_alarm_category_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model system_alarm_category {
+  idx                         Int                     @id @default(autoincrement())
+  parent_no                   Int?
+  name                        String                  @db.VarChar(50)
+  system_alarm                system_alarm[]
+  system_alarm_category       system_alarm_category?  @relation("system_alarm_categoryTosystem_alarm_category", fields: [parent_no], references: [idx], onDelete: Restrict, onUpdate: Restrict, map: "system_alarm_category_self_FK")
+  other_system_alarm_category system_alarm_category[] @relation("system_alarm_categoryTosystem_alarm_category")
+
+  @@index([parent_no], map: "system_alarm_category_self_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model system_alarm_menual {
+  idx                        Int                          @id @default(autoincrement())
+  title                      String                       @db.VarChar(80)
+  content                    String                       @db.VarChar(1000)
+  is_reserve                 Int                          @default(0)
+  reserve_date               DateTime?                    @db.Timestamp(0)
+  status                     String                       @default("R") @db.Char(1)
+  register                   Int?
+  register_date              DateTime                     @default(now()) @db.Timestamp(0)
+  is_deleted                 String                       @default("N") @db.Char(1)
+  system_alarm_menual_member system_alarm_menual_member[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model system_alarm_menual_member {
+  idx                 Int                 @id @default(autoincrement())
+  menual_no           Int
+  member_no           Int
+  is_deleted          String              @default("N") @db.Char(1)
+  member              member              @relation(fields: [member_no], references: [idx], onUpdate: Restrict, map: "FK_system_alarm_menual_member_member")
+  system_alarm_menual system_alarm_menual @relation(fields: [menual_no], references: [idx], onDelete: Cascade, onUpdate: Restrict, map: "FK_system_alarm_menual_member_system_alarm_menual")
+
+  @@index([member_no], map: "FK_system_alarm_menual_member_member")
+  @@index([menual_no], map: "FK_system_alarm_menual_member_system_alarm_menual")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model system_alarm_value {
+  idx         Int     @id @default(autoincrement())
+  name        String? @db.VarChar(50)
+  date_format String? @db.VarChar(20)
+  trans_value String? @db.VarChar(50)
+  meaning     String? @db.VarChar(50)
+  is_deleted  String  @default("N") @db.Char(1)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model teacher_comment {
+  idx                                       Int                  @id @default(autoincrement())
+  campas_class_content_no                   Int
+  student_no                                Int
+  comment                                   String?              @db.VarChar(2000)
+  register                                  Int
+  register_date                             DateTime             @default(now()) @db.Timestamp(0)
+  is_deleted                                String               @default("N") @db.Char(1)
+  campas_class_content                      campas_class_content @relation(fields: [campas_class_content_no], references: [idx], onUpdate: Restrict, map: "teacher_comment_campas_class_content_FK")
+  member_teacher_comment_registerTomember   member               @relation("teacher_comment_registerTomember", fields: [register], references: [idx], onUpdate: Restrict, map: "teacher_comment_register_FK")
+  member_teacher_comment_student_noTomember member               @relation("teacher_comment_student_noTomember", fields: [student_no], references: [idx], onUpdate: Restrict, map: "teacher_comment_student_FK")
+
+  @@index([campas_class_content_no], map: "campas_class_content_no")
+  @@index([register], map: "register")
+  @@index([student_no], map: "student_no")
+}
+
+enum content_folder_type {
+  course
+  content
+  pv
+}

@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLSchema, GraphQLString } from 'graphql';
+import { GraphQLList, GraphQLObjectType, GraphQLSchema, GraphQLString } from 'graphql';
 
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
@@ -11,6 +11,9 @@ import { WebSocketServer } from 'ws';
 import cors from 'cors';
 // import resolvers from './resolvers';
 // import typeDefs from './typeDefs';
+
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 
 /**
@@ -30,6 +33,19 @@ export const schema = new GraphQLSchema({
       hello: {
         type: GraphQLString,
         resolve: () => 'world',
+      },
+      members: {
+        type: new GraphQLList(new GraphQLObjectType({
+          name: "Members",
+          fields: {
+            id: { type: GraphQLString },
+            name: { type: GraphQLString },
+            email: { type: GraphQLString },
+          },
+        })),
+        resolve: async () => {
+          return await prisma.member.findMany();
+        },
       },
     },
   }),
